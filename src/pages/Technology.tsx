@@ -12,7 +12,8 @@ import {
   Code, 
   Shield, 
   BarChart,
-  Cloud
+  Cloud,
+  Check
 } from 'lucide-react';
 
 const Technology = () => {
