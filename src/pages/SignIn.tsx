@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ const SignIn = () => {
           />
           <Button 
             type="submit" 
-            className="w-full bg-[#2196F3] text-white hover:bg-[#1976D2]"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
           >
             Sign In
           </Button>

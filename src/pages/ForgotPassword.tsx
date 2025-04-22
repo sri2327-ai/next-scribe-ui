@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ const ForgotPassword = () => {
           <Input type="email" placeholder="Email" required />
           <Button 
             type="submit" 
-            className="w-full bg-[#2196F3] text-white hover:bg-[#1976D2]"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
           >
             Send Reset Link
           </Button>
