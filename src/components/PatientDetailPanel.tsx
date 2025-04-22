@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
 import PatientTabs from "./PatientTabs";
-import { ChevronLeft } from "lucide-react";
 import PatientDemographicsCard from "./PatientDemographicsCard";
+import PatientNotesTranscript from "./PatientNotesTranscript";
+import PatientMessagesChat from "./PatientMessagesChat";
 
 interface AppointmentType {
   label: string;
@@ -55,25 +56,19 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
           onToggle={() => setDemographicsCollapsed((c) => !c)}
         />
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
-          <div className="flex items-center px-6 py-4 border-b bg-white">
-            <button className="mr-4 text-gray-500 hover:text-blue-600" onClick={onClose}>
-              <ChevronLeft size={28} />
-            </button>
-            <div className="flex items-center">
-              <img
-                src="/lovable-uploads/53ad6fba-0f2a-42f5-9bb4-e0a5e45188d5.png"
-                alt="profile"
-                className="w-10 h-10 rounded-full object-cover bg-gray-200 mr-3"
-              />
-              <h2 className="text-2xl font-semibold">{patient.name}</h2>
-            </div>
-          </div>
+          {/* Removed back button and patient name header */}
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="border-b">
               <PatientTabs tabs={panelTabs} activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="text-sm text-gray-500">Content: {activeTab}</div>
+              {activeTab === "Notes / Transcript" ? (
+                <PatientNotesTranscript patient={patient} />
+              ) : activeTab === "Messages" ? (
+                <PatientMessagesChat patient={patient} />
+              ) : (
+                <div className="text-sm text-gray-500">Content: {activeTab}</div>
+              )}
             </div>
           </div>
         </div>
