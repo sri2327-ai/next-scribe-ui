@@ -1,10 +1,14 @@
 
 import React from "react";
 import { Appointment } from "../../types";
+import { getDaysInMonth } from "../../utils/dateUtils";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const WeekView: React.FC<{ currentDate: Date; appointments: Appointment[] }> = ({ currentDate, appointments }) => {
+const WeekView: React.FC<{ currentDate: Date; appointments: Appointment[]; showWeekends?: boolean }> = ({
+  currentDate, appointments, showWeekends = true
+}) => {
+  // Week start is Sunday
   const weekStart = new Date(currentDate);
   weekStart.setDate(weekStart.getDate() - weekStart.getDay());
   const days: Date[] = [];
@@ -17,6 +21,9 @@ const WeekView: React.FC<{ currentDate: Date; appointments: Appointment[] }> = (
   return (
     <div className="grid grid-cols-7 gap-3">
       {days.map((date, idx) => {
+        if (!showWeekends && (date.getDay() === 0 || date.getDay() === 6)) {
+          return <div key={idx} />;
+        }
         const dateStr = date.toISOString().split("T")[0];
         const dayAppointments = appointments.filter(a => a.date === dateStr);
         const isToday = date.toDateString() === new Date().toDateString();

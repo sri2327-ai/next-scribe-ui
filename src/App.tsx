@@ -1,12 +1,12 @@
 
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
-import CalendarSidebar from "./components/CalendarSidebar";
+import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
 import PatientsPanel from "./components/PatientsPanel";
 import EventPopup from "./components/EventPopup";
 import { Appointment, AppView, ViewMode } from "./types";
-import { mockAppointments, patients, appointmentTypes, providers } from "./data/mockData";
+import { mockAppointments, patients } from "./data/mockData";
 import "./index.css";
 
 const App: React.FC = () => {
@@ -47,13 +47,11 @@ const App: React.FC = () => {
       />
       {activeView === "Schedule" ? (
         <>
-          <CalendarSidebar
+          <CalendarPanel
             currentDate={currentDate}
             onDateChange={setCurrentDate}
             collapsed={calendarCollapsed}
             onToggleCollapse={() => setCalendarCollapsed(c => !c)}
-            showWeekends={showWeekends}
-            onToggleWeekends={() => setShowWeekends(w => !w)}
           />
           <AppointmentPanel
             viewMode={viewMode}
@@ -61,7 +59,10 @@ const App: React.FC = () => {
             appointments={appointments}
             onCreateAppointment={() => setShowEventPopup(true)}
             onViewModeChange={setViewMode}
+            onDateChange={setCurrentDate}
             patients={patients}
+            showWeekends={showWeekends}
+            onToggleWeekends={() => setShowWeekends(w => !w)}
           />
         </>
       ) : activeView === "Patients" ? (

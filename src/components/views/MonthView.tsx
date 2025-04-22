@@ -5,18 +5,30 @@ import { getDaysInMonth } from "../../utils/dateUtils";
 
 const daysHeader = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const MonthView: React.FC<{ currentDate: Date; appointments: Appointment[] }> = ({ currentDate, appointments }) => {
+const MonthView: React.FC<{ currentDate: Date; appointments: Appointment[]; showWeekends?: boolean }> = ({
+  currentDate, appointments, showWeekends = true
+}) => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month + 1);
   const firstDay = new Date(year, month, 1).getDay();
 
-  // Generate calendar grid
+  // Generate grid, omitting weekends if needed
   const weeks: JSX.Element[][] = [];
   let cells: JSX.Element[] = [];
   let dayNum = 1;
+  // For the correct number of cells in grid
   let totalCells = Math.ceil((daysInMonth + firstDay) / 7) * 7;
+
   for (let i = 0; i < totalCells; ++i) {
+    const weekDay = (i % 7);
+    // Omit weekends if needed
+    if (!showWeekends && (weekDay === 0 || weekDay === 6)) {
+      if (i < firstDay || dayNum > daysInMonth) cells.push(<td key={i} />);
+      else { dayNum++; }
+      if ((i + 1) % 7 === 0) { weeks.push(cells); cells = []; }
+      continue;
+    }
     if (i < firstDay || dayNum > daysInMonth) {
       cells.push(<td key={i} className="py-2" />);
     } else {
@@ -46,9 +58,10 @@ const MonthView: React.FC<{ currentDate: Date; appointments: Appointment[] }> = 
     <table className="table-fixed w-full border-separate border-spacing-1 bg-white rounded shadow-sm">
       <thead>
         <tr>
-          {daysHeader.map(d => (
-            <th key={d} className="py-1 text-xs font-bold text-gray-500">{d}</th>
-          ))}
+          {daysHeader.map((d, i) =>
+            (!showWeekends && (i === 0 || i === 6)) ? null : (
+              <th key={d} className="py-1 text-xs font-bold text-gray-500">{d}</th>
+            ))}
         </tr>
       </thead>
       <tbody>
