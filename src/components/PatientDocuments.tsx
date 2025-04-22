@@ -2,7 +2,7 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Filter, SortDescending, SortAscending } from "lucide-react";
+import { Filter, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface PatientDocumentsProps {
@@ -110,12 +110,12 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
         >
           {sortOrder === "asc" ? (
             <>
-              <SortAscending size={16} />
+              <ArrowUpAZ size={16} />
               <span>Oldest</span>
             </>
           ) : (
             <>
-              <SortDescending size={16} />
+              <ArrowDownAZ size={16} />
               <span>Newest</span>
             </>
           )}

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Timeline } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -86,7 +86,7 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patient }) => {
   return (
     <div className="h-full">
       <div className="flex items-center mb-4">
-        <Timeline className="mr-2" />
+        <Clock className="mr-2" />
         <h3 className="text-lg font-semibold">Patient Timeline</h3>
       </div>
       

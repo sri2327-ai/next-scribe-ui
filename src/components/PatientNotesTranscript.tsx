@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Filter, Clock, Edit, SortDescending, SortAscending } from "lucide-react";
+import { Calendar, Filter, Clock, Edit, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 
 interface AppointmentType {
   label: string;
@@ -112,12 +112,12 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
           >
             {sortOrder === "asc" ? (
               <>
-                <SortAscending size={16} />
+                <ArrowUpAZ size={16} />
                 <span>Oldest</span>
               </>
             ) : (
               <>
-                <SortDescending size={16} />
+                <ArrowDownAZ size={16} />
                 <span>Newest</span>
               </>
             )}
