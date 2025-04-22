@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import { User, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { AppView } from "../types";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
@@ -13,7 +13,6 @@ const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
   { icon: <Pill stroke="black" fill="none" />, label: "e-Prescribe", view: "e-Prescribe" }
 ];
 
-// Only import icon components that are actually used
 import { Calendar, BarChart, DollarSign, Pill } from "lucide-react";
 
 interface SidebarProps {
@@ -30,6 +29,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   onViewChange
 }) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/signin');
+  };
 
   return (
     <aside className={`h-full bg-white shadow-lg flex flex-col transition-all duration-300
@@ -66,9 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         ))}
       </nav>
-      {/* Footer with profile and settings - stick to bottom */}
-      <div className={`mt-auto flex flex-col items-center gap-0.5 ${collapsed ? "mb-2" : "mb-6 px-3"}`}>
-        {/* Profile dropdown */}
+      <div className={`mt-auto flex flex-col items-end gap-0.5 ${collapsed ? "mb-2 pr-1" : "mb-6 px-3"}`}>
         <DropdownMenu open={profileMenuOpen} onOpenChange={setProfileMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="mb-1">
@@ -76,38 +78,28 @@ const Sidebar: React.FC<SidebarProps> = ({
               <span className="sr-only">Profile menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="mb-1">
-            <DropdownMenuItem
-              onClick={() => {
-                setProfileMenuOpen(false);
-                // You could navigate to a real profile page here
-              }}
-            >
+          <DropdownMenuContent align="end" className="mb-1">
+            <DropdownMenuItem onClick={() => {
+              setProfileMenuOpen(false);
+              // You could navigate to a real profile page here
+            }}>
               Profile
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                setProfileMenuOpen(false);
-                // For real logout, integrate Supabase/Clerk!
-                window.location.href = "/signin";
-              }}
-            >
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2" size={16} /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {/* Settings button */}
         <Button variant="ghost" size="icon">
           <Settings className="text-gray-700" />
           <span className="sr-only">Settings</span>
         </Button>
       </div>
-      {/* Sidebar collapse/expand button */}
       <button
         aria-label="Collapse sidebar"
         onClick={onToggleCollapse}
-        className="mt-2 mx-auto text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 p-1 rounded-full shadow-sm transition"
+        className="mt-2 mb-4 self-center text-gray-700 border border-gray-200 bg-white hover:bg-gray-50 p-1 rounded-full shadow-sm transition"
         style={{ display: "flex", alignItems: "center" }}
       >
         {collapsed
