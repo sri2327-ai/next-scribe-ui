@@ -1,83 +1,84 @@
 
-import React, { useState } from 'react';
-import MenuSidebar from './components/MenuSidebar';
-import CalendarAndFilters from './components/CalendarAndFilters';
-import AppointmentView from './components/AppointmentView';
-import PatientsView from './components/PatientsView';
-import EventPopup from './components/EventPopup';
-import { mockAppointments, patients, appointmentTypes, providers } from './data/mockData';
-import { Appointment, AppView, ViewMode } from './types';
-import { formatDate } from './utils/dateUtils';
-import './index.css';
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import CalendarSidebar from "./components/CalendarSidebar";
+import AppointmentPanel from "./components/AppointmentPanel";
+import PatientsPanel from "./components/PatientsPanel";
+import EventPopup from "./components/EventPopup";
+import { Appointment, AppView, ViewMode } from "./types";
+import { mockAppointments, patients, appointmentTypes, providers } from "./data/mockData";
+import "./index.css";
 
 const App: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [activeView, setActiveView] = useState<AppView>('Schedule');
-  const [menuCollapsed, setMenuCollapsed] = useState<boolean>(false);
-  const [calendarCollapsed, setCalendarCollapsed] = useState<boolean>(false);
-  const [showWeekends, setShowWeekends] = useState<boolean>(true);
+  const [activeView, setActiveView] = useState<AppView>("Schedule");
+  const [menuCollapsed, setMenuCollapsed] = useState(false);
+  const [calendarCollapsed, setCalendarCollapsed] = useState(false);
+  const [showWeekends, setShowWeekends] = useState(true);
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
-  const [showEventPopup, setShowEventPopup] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('day');
+  const [showEventPopup, setShowEventPopup] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("day");
 
-  const handleCreateAppointment = (newAppointment: any) => {
-    setAppointments([...appointments, {
-      ...newAppointment,
-      id: Math.max(...appointments.map(a => a.id)) + 1,
-      date: newAppointment.date,
-      time: `${newAppointment.startTime} - ${newAppointment.endTime}`,
-      color: newAppointment.appointmentType === 'Psychotherapy' ? 'purple-500' : 
-              newAppointment.appointmentType === 'Medication Management' ? 'blue-600' : 'teal-500',
-      type: newAppointment.appointmentType
-    }]);
+  const handleCreateAppointment = (newAppt: any) => {
+    setAppointments([
+      ...appointments,
+      {
+        ...newAppt,
+        id: Math.max(0, ...appointments.map(a => a.id)) + 1,
+        date: newAppt.date,
+        time: `${newAppt.startTime} - ${newAppt.endTime}`,
+        color: newAppt.appointmentType === "Psychotherapy"
+          ? "purple-500"
+          : newAppt.appointmentType === "Medication Management"
+            ? "blue-600"
+            : "teal-500",
+        type: newAppt.appointmentType
+      }
+    ]);
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <MenuSidebar
-        isCollapsed={menuCollapsed}
-        onToggleCollapse={() => setMenuCollapsed(!menuCollapsed)}
+    <div className="flex h-screen bg-gradient-to-br from-blue-50 via-slate-100 to-purple-50">
+      <Sidebar
+        collapsed={menuCollapsed}
+        onToggleCollapse={() => setMenuCollapsed((c) => !c)}
         activeView={activeView}
         onViewChange={setActiveView}
       />
-      
-      {activeView === 'Schedule' ? (
+      {activeView === "Schedule" ? (
         <>
-          <CalendarAndFilters
+          <CalendarSidebar
             currentDate={currentDate}
             onDateChange={setCurrentDate}
-            isCollapsed={calendarCollapsed}
-            onToggleCollapse={() => setCalendarCollapsed(!calendarCollapsed)}
+            collapsed={calendarCollapsed}
+            onToggleCollapse={() => setCalendarCollapsed(c => !c)}
             showWeekends={showWeekends}
-            onToggleWeekends={() => setShowWeekends(!showWeekends)}
+            onToggleWeekends={() => setShowWeekends(w => !w)}
           />
-          <AppointmentView
+          <AppointmentPanel
             viewMode={viewMode}
             currentDate={currentDate}
             appointments={appointments}
             onCreateAppointment={() => setShowEventPopup(true)}
             onViewModeChange={setViewMode}
+            patients={patients}
           />
         </>
-      ) : activeView === 'Patients' ? (
-        <PatientsView />
+      ) : activeView === "Patients" ? (
+        <PatientsPanel />
       ) : (
-        <div className="flex-1 p-4">
-          <h2 className="text-xl font-semibold mb-4">{activeView} View</h2>
-          <p>This is the {activeView.toLowerCase()} view content</p>
+        <div className="flex-1 flex justify-center items-center">
+          <div className="bg-white shadow mt-24 p-12 rounded-xl text-center">
+            <h2 className="text-2xl font-semibold mb-4">{activeView} View</h2>
+            <p>This is the {activeView.toLowerCase()} view content.</p>
+          </div>
         </div>
       )}
-
-      {showEventPopup && (
-        <EventPopup
-          isOpen={showEventPopup}
-          onClose={() => setShowEventPopup(false)}
-          onSave={handleCreateAppointment}
-          patients={patients}
-          staff={providers}
-          appointmentTypes={appointmentTypes}
-        />
-      )}
+      <EventPopup
+        isOpen={showEventPopup}
+        onClose={() => setShowEventPopup(false)}
+        onSave={handleCreateAppointment}
+      />
     </div>
   );
 };
