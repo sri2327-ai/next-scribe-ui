@@ -1,10 +1,11 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ViewMode, Appointment } from "../types";
 import DayView from "./views/DayView";
 import WeekView from "./views/WeekView";
 import MonthView from "./views/MonthView";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar, Filter, CalendarDays } from "lucide-react";
+import AppointmentRequestsDrawer from "./AppointmentRequestsDrawer";
 
 function getTimezoneDisplay() {
   try {
@@ -37,29 +38,48 @@ const AppointmentPanel: React.FC<Props> = ({
   showWeekends,
   onToggleWeekends
 }) => {
-  // State for patient filtering in the dropdown
   const [selectedPatient, setSelectedPatient] = React.useState("all");
-  const filteredAppointments = useMemo(() =>
-    selectedPatient === "all"
-      ? appointments
-      : appointments.filter(appt =>
-          appt.patient?.toLowerCase().includes(selectedPatient.toLowerCase()) ||
-          appt.title?.toLowerCase().includes(selectedPatient.toLowerCase())
-        ),
+  const [showRequests, setShowRequests] = useState(false);
+
+  const filteredAppointments = useMemo(
+    () =>
+      selectedPatient === "all"
+        ? appointments
+        : appointments.filter(
+            (appt) =>
+              appt.patient?.toLowerCase().includes(selectedPatient.toLowerCase()) ||
+              appt.title?.toLowerCase().includes(selectedPatient.toLowerCase())
+          ),
     [appointments, selectedPatient]
   );
 
   // For panel title
   let panelTitle: string = "";
   if (viewMode === "day") {
-    panelTitle = currentDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    panelTitle = currentDate.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
   } else if (viewMode === "week") {
     const s = new Date(currentDate);
     const start = new Date(s.setDate(s.getDate() - s.getDay()));
-    const end = new Date(start); end.setDate(start.getDate() + 6);
-    panelTitle = `Week of ${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    panelTitle = `Week of ${start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })} - ${end.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`;
   } else if (viewMode === "month") {
-    panelTitle = currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    panelTitle = currentDate.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
   }
 
   // Navigation
@@ -78,17 +98,13 @@ const AppointmentPanel: React.FC<Props> = ({
     onDateChange(new Date());
   }
 
-  // Event handlers for calendar/day/week click (simulate open add appointment on bg clicks)
   function handlePanelBgClick(e: React.MouseEvent) {
-    // On clicking the empty panel area (not a specific existing appt), open popup
     if ((e.target as HTMLElement).closest("[data-appt]")) return;
     onCreateAppointment();
   }
 
-  // Show timezone as browser locale
   const timeZone = getTimezoneDisplay();
 
-  // --- Render
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       {/* Two-row header */}
@@ -120,10 +136,11 @@ const AppointmentPanel: React.FC<Props> = ({
               Show Weekends
             </label>
           </div>
-          {/* View/period controls */}
           <div className="flex items-center gap-1 ml-auto">
-            <button onClick={goToToday}
-              className="px-3 py-1 border rounded text-blue-600 border-blue-300 bg-white hover:bg-blue-100 text-sm mr-1">
+            <button
+              onClick={goToToday}
+              className="px-3 py-1 border rounded text-blue-600 border-blue-300 bg-white hover:bg-blue-100 text-sm mr-1"
+            >
               Today
             </button>
             <button
@@ -159,19 +176,35 @@ const AppointmentPanel: React.FC<Props> = ({
         </div>
         {/* Second row: date/title & timezone */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-y-2">
-          <span className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight flex items-center gap-4">
-            {panelTitle}
-            <span className="ml-2 text-base font-normal text-gray-500 whitespace-nowrap">({timeZone})</span>
+          <span className="flex items-center gap-2">
+            <span
+              className="text-3xl sm:text-4xl font-light leading-tight text-gray-900"
+              style={{ letterSpacing: "0.01em" }}
+            >
+              {panelTitle}
+              <span className="ml-3 text-base font-normal text-gray-500 whitespace-nowrap">
+                ({timeZone})
+              </span>
+            </span>
+            {/* Appointment Requests icon */}
+            <button
+              title="View Appointment Requests"
+              className="ml-4 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition"
+              onClick={() => setShowRequests(true)}
+            >
+              {/* CalendarDays icon from lucide */}
+              <CalendarDays className="w-6 h-6 text-blue-700" />
+            </button>
           </span>
         </div>
       </div>
+      <AppointmentRequestsDrawer open={showRequests} onClose={() => setShowRequests(false)} />
       {/* Views */}
       <div
         className="p-4 overflow-y-auto flex-1"
         onClick={handlePanelBgClick}
         style={{ cursor: "pointer" }}
       >
-        {/* On click empty area, appointment popup should open */}
         {viewMode === "day" && (
           <DayView currentDate={currentDate} appointments={filteredAppointments} />
         )}
