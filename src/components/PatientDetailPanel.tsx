@@ -4,6 +4,9 @@ import PatientTabs from "./PatientTabs";
 import PatientDemographicsCard from "./PatientDemographicsCard";
 import PatientNotesTranscript from "./PatientNotesTranscript";
 import PatientMessagesChat from "./PatientMessagesChat";
+import PatientTimeline from "./PatientTimeline";
+import PatientProfile from "./PatientProfile";
+import PatientDocuments from "./PatientDocuments";
 
 interface AppointmentType {
   label: string;
@@ -56,7 +59,6 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
           onToggle={() => setDemographicsCollapsed((c) => !c)}
         />
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
-          {/* Removed back button and patient name header */}
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="border-b">
               <PatientTabs tabs={panelTabs} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -66,6 +68,12 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
                 <PatientNotesTranscript patient={patient} />
               ) : activeTab === "Messages" ? (
                 <PatientMessagesChat patient={patient} />
+              ) : activeTab === "Timeline" ? (
+                <PatientTimeline patient={patient} />
+              ) : activeTab === "Profile" ? (
+                <PatientProfile patient={patient} />
+              ) : activeTab === "Documents" ? (
+                <PatientDocuments patient={patient} />
               ) : (
                 <div className="text-sm text-gray-500">Content: {activeTab}</div>
               )}
