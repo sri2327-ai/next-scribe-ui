@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PatientTabs from "./PatientTabs";
 import { ChevronLeft } from "lucide-react";
 import PatientDemographicsCard from "./PatientDemographicsCard";
+import Sidebar from "./Sidebar";
 
 interface AppointmentType {
   label: string;
@@ -46,19 +47,24 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
   const [demographicsCollapsed, setDemographicsCollapsed] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-hidden">
-      <div className="flex items-center px-6 py-4 border-b">
-        <button className="mr-4 text-gray-500 hover:text-blue-600" onClick={onClose}>
-          <ChevronLeft size={28} />
-        </button>
-        <h2 className="text-2xl font-semibold">{patient.name}</h2>
-      </div>
-      <div className="flex flex-1 overflow-hidden">
-        <PatientDemographicsCard
-          patient={patient}
-          collapsed={demographicsCollapsed}
-          onToggle={() => setDemographicsCollapsed((c) => !c)}
-        />
+    <div className="flex h-[100vh] bg-white">
+      <PatientDemographicsCard
+        patient={patient}
+        collapsed={demographicsCollapsed}
+        onToggle={() => setDemographicsCollapsed((c) => !c)}
+      />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex items-center px-6 py-4 border-b bg-white">
+          <button className="mr-4 text-gray-500 hover:text-blue-600" onClick={onClose}>
+            <ChevronLeft size={28} />
+          </button>
+          <img
+            src="/lovable-uploads/53ad6fba-0f2a-42f5-9bb4-e0a5e45188d5.png"
+            alt="profile"
+            className="w-10 h-10 rounded-full object-cover bg-gray-200 mr-3"
+          />
+          <h2 className="text-2xl font-semibold">{patient.name}</h2>
+        </div>
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="border-b">
             <PatientTabs tabs={panelTabs} activeTab={activeTab} setActiveTab={setActiveTab} />

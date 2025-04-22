@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 interface AppointmentType {
   label: string;
@@ -25,7 +27,7 @@ interface PatientType {
   lastAppointment: string | null;
   phone: string;
   email: string;
-  profileImageUrl?: string; // For possible future extension
+  profileImageUrl?: string;
 }
 
 interface PatientDemographicsCardProps {
@@ -50,15 +52,42 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
   onToggle
 }) => {
   // Placeholder profile image
-  const placeholderPhoto = "/lovable-uploads/photo-1618160702438-9b02ab6515c9";
-  // Could later use patient.profileImageUrl if available
+  const avatarSrc = patient.profileImageUrl || "/lovable-uploads/53ad6fba-0f2a-42f5-9bb4-e0a5e45188d5.png";
+
+  // State for demographics fields - normally should lift up to context/store for true global changes
+  const [legalName, setLegalName] = useState({
+    first: "Kelly",
+    middle: "Lynn",
+    last: "Aceves"
+  });
+  const [nameToUse, setNameToUse] = useState({ first: "", middle: "", last: "" });
+  const [formerName, setFormerName] = useState({ first: "", middle: "", last: "" });
+  const [background, setBackground] = useState({
+    dob: "07/04/1977",
+    birthSex: "F",
+    legalSex: "F",
+    pronouns: "",
+    genderIdentity: "Female",
+    race: "White",
+    raceSub: "",
+    ethnicity: "Non Hispanic or Latino",
+    specificEthnicity: "",
+    ethnicityRequired: "",
+    notes: ""
+  });
+
   return (
-    <div className={`relative transition-all duration-300 bg-gray-50 border-r overflow-y-auto h-full ${collapsed ? "w-16 px-2" : "w-72 md:w-1/4 p-6"}`}>
+    <div
+      className={`relative transition-all duration-300 bg-gray-50 border-r overflow-y-auto h-full ${collapsed ? "w-16 px-2" : "w-96 max-w-xs p-6"}`}
+    >
       <button
         aria-label="Collapse demographics card"
         onClick={onToggle}
-        className="absolute -right-4 top-4 z-10 bg-white border rounded-full shadow transition hover:bg-gray-50"
-        style={{ width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}
+        className="absolute right-2 top-3 z-10 bg-white border border-blue-400 rounded-full shadow transition hover:bg-gray-50 flex items-center justify-center"
+        style={{
+          width: "32px",
+          height: "32px"
+        }}
       >
         {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
       </button>
@@ -66,7 +95,7 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
         <div className="flex flex-col items-center pt-8">
           {/* Avatar collapsed view */}
           <Avatar className="mb-2 h-10 w-10">
-            <AvatarImage src={placeholderPhoto} />
+            <AvatarImage src={avatarSrc} />
             <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
           </Avatar>
           <span className="text-xs text-gray-500 mt-3" style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}>{patient.name.split(" ")[0]}</span>
@@ -75,7 +104,7 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src={placeholderPhoto} />
+              <AvatarImage src={avatarSrc} />
               <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
@@ -93,6 +122,7 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
           <div className="mt-2 text-xs text-yellow-800">{"$"}{patient.copay} Copay</div>
           <div className="mt-2 text-xs">Flags ({patient.flags})</div>
           <div className="border-b my-2" />
+
           <div>
             <div className="font-semibold mb-1">Contact</div>
             <div className="text-xs text-gray-600">Phone <span className="font-mono">{patient.phone}</span> (mobile)</div>
@@ -112,10 +142,151 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
             <span className="text-xs">{patient.lastAppointment || "--"}</span>
           </div>
           <div className="border-b my-2" />
+
+          {/* Demographics section, editable */}
           <div>
-            <div className="font-semibold mb-1">Demographics</div>
-            {/* more details can go here */}
-            <div className="text-xs text-gray-400">Demographics data...</div>
+            <div className="font-semibold mb-1 mt-2">Demographics</div>
+
+            <div className="space-y-2">
+              <Label className="text-xs">Legal name</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={legalName.first}
+                  onChange={e => setLegalName({ ...legalName, first: e.target.value })}
+                  className="w-1/3"
+                  placeholder="First"
+                />
+                <Input
+                  value={legalName.middle}
+                  onChange={e => setLegalName({ ...legalName, middle: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Middle"
+                />
+                <Input
+                  value={legalName.last}
+                  onChange={e => setLegalName({ ...legalName, last: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Last"
+                />
+              </div>
+              <Label className="text-xs">Name to use</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={nameToUse.first}
+                  onChange={e => setNameToUse({ ...nameToUse, first: e.target.value })}
+                  className="w-1/3"
+                  placeholder="First"
+                />
+                <Input
+                  value={nameToUse.middle}
+                  onChange={e => setNameToUse({ ...nameToUse, middle: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Middle"
+                />
+                <Input
+                  value={nameToUse.last}
+                  onChange={e => setNameToUse({ ...nameToUse, last: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Last"
+                />
+              </div>
+              <Label className="text-xs">Former name</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={formerName.first}
+                  onChange={e => setFormerName({ ...formerName, first: e.target.value })}
+                  className="w-1/3"
+                  placeholder="First"
+                />
+                <Input
+                  value={formerName.middle}
+                  onChange={e => setFormerName({ ...formerName, middle: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Middle"
+                />
+                <Input
+                  value={formerName.last}
+                  onChange={e => setFormerName({ ...formerName, last: e.target.value })}
+                  className="w-1/3"
+                  placeholder="Last"
+                />
+              </div>
+              <Label className="text-xs">Background</Label>
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-2">
+                  <Input
+                    value={background.dob}
+                    onChange={e => setBackground({ ...background, dob: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Date of birth"
+                  />
+                  <Input
+                    value={background.birthSex}
+                    onChange={e => setBackground({ ...background, birthSex: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Birth sex"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={background.legalSex}
+                    onChange={e => setBackground({ ...background, legalSex: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Legal sex"
+                  />
+                  <Input
+                    value={background.pronouns}
+                    onChange={e => setBackground({ ...background, pronouns: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Pronouns"
+                  />
+                </div>
+                <Input
+                  value={background.genderIdentity}
+                  onChange={e => setBackground({ ...background, genderIdentity: e.target.value })}
+                  className="w-full"
+                  placeholder="Gender identity"
+                />
+                <div className="flex gap-2">
+                  <Input
+                    value={background.race}
+                    onChange={e => setBackground({ ...background, race: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Race"
+                  />
+                  <Input
+                    value={background.raceSub}
+                    onChange={e => setBackground({ ...background, raceSub: e.target.value })}
+                    className="w-1/2"
+                    placeholder="Race subcategory"
+                  />
+                </div>
+                <Input
+                  value={background.ethnicity}
+                  onChange={e => setBackground({ ...background, ethnicity: e.target.value })}
+                  className="w-full"
+                  placeholder="Ethnicity"
+                />
+                <Input
+                  value={background.specificEthnicity}
+                  onChange={e => setBackground({ ...background, specificEthnicity: e.target.value })}
+                  className="w-full"
+                  placeholder="Specific ethnicity"
+                />
+                <Input
+                  value={background.ethnicityRequired}
+                  onChange={e => setBackground({ ...background, ethnicityRequired: e.target.value })}
+                  className="w-full"
+                  placeholder="Ethnicity required"
+                />
+                <Input
+                  value={background.notes}
+                  onChange={e => setBackground({ ...background, notes: e.target.value })}
+                  className="w-full"
+                  placeholder="Additional notes"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -124,4 +295,3 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
 };
 
 export default PatientDemographicsCard;
-
