@@ -22,7 +22,7 @@ const SignUp = () => {
           <Input type="password" placeholder="Password" required />
           <Button 
             type="submit" 
-            className="w-full bg-[#33C3F0] text-white hover:bg-[#1EAEDB]"
+            className="w-full bg-[#2196F3] text-white hover:bg-[#1976D2]"
           >
             Sign Up
           </Button>
