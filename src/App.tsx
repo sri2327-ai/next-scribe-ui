@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
@@ -7,9 +8,12 @@ import PatientsPanel from "./components/PatientsPanel";
 import EventPopup from "./components/EventPopup";
 import { Appointment, AppView, ViewMode } from "./types";
 import { mockAppointments, patients } from "./data/mockData";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
 import "./index.css";
 
-const App: React.FC = () => {
+const MainApp = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [activeView, setActiveView] = useState<AppView>("Schedule");
   const [menuCollapsed, setMenuCollapsed] = useState(false);
@@ -81,6 +85,18 @@ const App: React.FC = () => {
         onSave={handleCreateAppointment}
       />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/" element={<MainApp />} />
+      <Route path="*" element={<Navigate to="/signin" replace />} />
+    </Routes>
   );
 };
 
