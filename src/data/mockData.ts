@@ -60,3 +60,56 @@ export const appointmentTypes = [
 export const providers = [
   "Katherine Thompson", "Devon Smith"
 ];
+
+export const mockPatientData = [
+  {
+    name: "Kyle Hunter",
+    clinician: "Katherine Thompson",
+    status: "Active"
+  },
+  {
+    name: "Alex Hund",
+    clinician: "Devon Smith",
+    status: "Active"
+  },
+  {
+    name: "Kyle Michael Johnson",
+    clinician: "Katherine Thompson",
+    status: "Active"
+  },
+  {
+    name: "Pamela Britez",
+    clinician: "Devon Smith",
+    status: "Active"
+  },
+  {
+    name: "Dennis Eugene Chastain",
+    clinician: "Katherine Thompson", 
+    status: "Active"
+  },
+  {
+    name: "Thelma Davila",
+    clinician: "Devon Smith",
+    status: "Inactive"
+  },
+  {
+    name: "Tooba Safeer",
+    clinician: "Katherine Thompson",
+    status: "Active"
+  },
+  {
+    name: "Sherry Buggs",
+    clinician: "Devon Smith",
+    status: "Active"
+  },
+  {
+    name: "John Smith",
+    clinician: "Katherine Thompson",
+    status: "Inactive"
+  },
+  {
+    name: "Emma Johnson",
+    clinician: "Devon Smith",
+    status: "Active"
+  }
+];

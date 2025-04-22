@@ -13,3 +13,16 @@ export interface Appointment {
   type?: string;
   color?: string;
 }
+
+export interface PatientFormData {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  confirmEmail: string;
+  phone: string;
+  consent: boolean;
+  sendIntake: boolean;
+  invitePortal: boolean;
+  careTeam: string[];
+}
