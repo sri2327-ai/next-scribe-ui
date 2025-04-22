@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,10 @@ const SignIn = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button type="submit" className="w-full bg-[#1EAEDB] text-white hover:bg-[#0FA0CE]">
+          <Button 
+            type="submit" 
+            className="w-full bg-[#33C3F0] text-white hover:bg-[#1EAEDB]"
+          >
             Sign In
           </Button>
         </form>

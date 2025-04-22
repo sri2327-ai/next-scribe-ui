@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,10 @@ const ForgotPassword = () => {
         </div>
         <form className="flex flex-col gap-4">
           <Input type="email" placeholder="Email" required />
-          <Button type="submit" className="w-full bg-[#1EAEDB] text-white hover:bg-[#0FA0CE]">
+          <Button 
+            type="submit" 
+            className="w-full bg-[#33C3F0] text-white hover:bg-[#1EAEDB]"
+          >
             Send Reset Link
           </Button>
         </form>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,10 @@ const SignUp = () => {
           <Input type="text" placeholder="Full name" required />
           <Input type="email" placeholder="Email" required />
           <Input type="password" placeholder="Password" required />
-          <Button type="submit" className="w-full bg-[#1EAEDB] text-white hover:bg-[#0FA0CE]">
+          <Button 
+            type="submit" 
+            className="w-full bg-[#33C3F0] text-white hover:bg-[#1EAEDB]"
+          >
             Sign Up
           </Button>
         </form>
