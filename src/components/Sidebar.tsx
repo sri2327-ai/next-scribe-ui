@@ -20,7 +20,8 @@ const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
   { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients" },
   { icon: <Calendar stroke="black" fill="none" />, label: "Schedule", view: "Schedule" },
   { icon: <ListChecks stroke="black" fill="none" />, label: "Tasks", view: "Tasks" },
-  { icon: <Inbox stroke="black" fill="none" />, label: "Inbox", view: "Inbox" }
+  { icon: <Inbox stroke="black" fill="none" />, label: "Inbox", view: "Inbox" },
+  { icon: <BarChart stroke="black" fill="none" />, label: "Reports", view: "Reports" }
 ];
 
 interface SidebarProps {
@@ -99,8 +100,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="ghost" size="icon">
-          <Settings className="text-gray-700" />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => onViewChange("Settings")}
+          className={activeView === "Settings" ? "bg-blue-100" : ""}
+        >
+          <Settings className={activeView === "Settings" ? "text-blue-600" : "text-gray-700"} />
           <span className="sr-only">Settings</span>
         </Button>
       </div>

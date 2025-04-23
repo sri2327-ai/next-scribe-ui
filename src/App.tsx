@@ -16,6 +16,7 @@ import ReportsPanel from "./components/ReportsPanel";
 import PatientPortal from "./pages/PatientPortal";
 import TaskPanel from "./components/TaskPanel";
 import InboxPanel from "./components/InboxPanel";
+import SettingsPanel from "./components/SettingsPanel";
 
 const MainApp = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -81,6 +82,8 @@ const MainApp = () => {
         <InboxPanel />
       ) : activeView === "Reports" ? (
         <ReportsPanel />
+      ) : activeView === "Settings" ? (
+        <SettingsPanel />
       ) : (
         <div className="flex-1 flex justify-center items-center">
           <div className="bg-white shadow mt-24 p-12 rounded-xl text-center">

@@ -1,4 +1,5 @@
-export type AppView = "Schedule" | "Patients" | "Reports" | "Billing" | "e-Prescribe" | "Tasks" | "Inbox";
+
+export type AppView = "Schedule" | "Patients" | "Reports" | "Tasks" | "Inbox" | "Settings";
 export type ViewMode = "day" | "week" | "month";
 
 export interface Appointment {
