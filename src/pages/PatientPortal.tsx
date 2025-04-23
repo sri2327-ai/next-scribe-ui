@@ -8,10 +8,16 @@ import PatientDashboard from "./PatientDashboard";
 import PatientMessages from "../components/patient-portal/PatientMessages";
 import PatientHealthRecords from "../components/patient-portal/PatientHealthRecords";
 import PatientLayout from "../components/patient-portal/PatientLayout";
+import { toast } from "sonner";
 
 const PatientPortal: React.FC = () => {
-  // Simple authentication check - in a real app, this would use a proper auth system
   const isAuthenticated = localStorage.getItem("patientAuth") === "true";
+
+  const handleSignOut = () => {
+    localStorage.removeItem("patientAuth");
+    localStorage.removeItem("patientEmail");
+    toast.info("Signed out successfully");
+  };
 
   return (
     <Routes>
@@ -22,7 +28,7 @@ const PatientPortal: React.FC = () => {
         path="/*"
         element={
           isAuthenticated ? (
-            <PatientLayout>
+            <PatientLayout onSignOut={handleSignOut}>
               <Routes>
                 <Route path="/" element={<PatientDashboard />} />
                 <Route path="/messages" element={<PatientMessages />} />

@@ -1,28 +1,21 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Home, MessageSquare, FileText, LogOut } from "lucide-react";
+import { Home, MessageSquare, FileText, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 interface PatientLayoutProps {
   children: React.ReactNode;
+  onSignOut: () => void;
 }
 
-const PatientLayout: React.FC<PatientLayoutProps> = ({ children }) => {
+const PatientLayout: React.FC<PatientLayoutProps> = ({ children, onSignOut }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [patientName] = useState(() => {
     return localStorage.getItem("patientEmail")?.split("@")[0] || "Patient";
   });
-
-  const handleSignOut = () => {
-    // Clear auth data
-    localStorage.removeItem("patientAuth");
-    localStorage.removeItem("patientEmail");
-    toast.info("Signed out successfully");
-    navigate("/patient/signin");
-  };
 
   const navItems = [
     { name: "Dashboard", path: "/patient", icon: Home },
@@ -68,14 +61,24 @@ const PatientLayout: React.FC<PatientLayoutProps> = ({ children }) => {
           </nav>
           
           <div className="p-4 border-t">
-            <Button 
-              variant="outline" 
-              className="w-full flex items-center justify-center"
-              onClick={handleSignOut}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full flex items-center justify-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => navigate("/patient/settings")}>
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={onSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -98,7 +101,7 @@ const PatientLayout: React.FC<PatientLayoutProps> = ({ children }) => {
             </Link>
           ))}
           <button
-            onClick={handleSignOut}
+            onClick={onSignOut}
             className="p-2 rounded-md flex flex-col items-center text-gray-500"
           >
             <LogOut className="w-5 h-5" />

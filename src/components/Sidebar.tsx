@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   User, 
@@ -88,11 +87,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="mb-1">
-            <DropdownMenuItem onClick={() => {
+            <DropdownMenuItem onSelect={() => {
               setProfileMenuOpen(false);
-              // You could navigate to a real profile page here
+              onViewChange("Settings");
             }}>
-              Profile
+              Profile Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
