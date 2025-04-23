@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clock, FileImage, MessageSquare, Settings, User } from "lucide-react";
+import { FileText, Clock, FileImage, MessageSquare, Settings, User, Plus } from "lucide-react";
 
 interface PatientTabsProps {
   tabs: string[];
@@ -25,7 +25,7 @@ const PatientTabs: React.FC<PatientTabsProps> = ({ tabs, activeTab, setActiveTab
       case "Settings":
         return <Settings className="w-4 h-4" />;
       default:
-        return null;
+        return <Plus className="w-4 h-4" />;
     }
   };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,8 @@ import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useForm } from "react-hook-form";
+import { Plus, Edit } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface PatientProfileProps {
   patient: {
@@ -17,325 +18,63 @@ interface PatientProfileProps {
   };
 }
 
-interface ContactFormValues {
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  email: string;
-  cellPhone: string;
-  homePhone: string;
-  workPhone: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  emergencyContactEmail: string;
-  emergencyContactRelationship: string;
-  emergencyContactAuth: boolean;
-}
+// ICD-10 database sample
+const icdCodesDatabase = [
+  { code: "R53.82", description: "Chronic fatigue, unspecified" },
+  { code: "G43.009", description: "Migraine without aura, not intractable, without status migrainosus" },
+  { code: "G89.4", description: "Chronic pain syndrome" },
+  { code: "F41.1", description: "Generalized anxiety disorder" },
+  { code: "F32.A", description: "Depression, unspecified" },
+  { code: "I10", description: "Essential (primary) hypertension" },
+  { code: "E11.9", description: "Type 2 diabetes mellitus without complications" },
+  { code: "J45.909", description: "Unspecified asthma, uncomplicated" },
+];
 
 const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("diagnoses");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredIcdCodes, setFilteredIcdCodes] = useState(icdCodesDatabase);
   
-  const form = useForm<ContactFormValues>({
-    defaultValues: {
-      addressLine1: "3111 Hummingbird Ln",
-      addressLine2: "",
-      city: "Humble",
-      state: "Texas",
-      zipCode: "77396",
-      email: "kellylynn.aceves@yahoo.com",
-      cellPhone: "(832) 495-2856",
-      homePhone: "",
-      workPhone: "",
-      emergencyContactName: "Destiny aceves",
-      emergencyContactPhone: "(832) 874-7976",
-      emergencyContactEmail: "destiny.aceves@yahoo.com",
-      emergencyContactRelationship: "Daughter",
-      emergencyContactAuth: true
-    }
-  });
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setFilteredIcdCodes(
+      icdCodesDatabase.filter(
+        (code) => 
+          code.code.toLowerCase().includes(term.toLowerCase()) || 
+          code.description.toLowerCase().includes(term.toLowerCase())
+      )
+    );
+  };
 
-  const onSubmit = (data: ContactFormValues) => {
-    console.log(data);
-    setIsEditing(false);
+  const openDialog = (type: string) => {
+    setDialogType(type);
+    setIsDialogOpen(true);
   };
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="contact" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
-          <TabsTrigger value="contact">Contact Info & Care Team</TabsTrigger>
           <TabsTrigger value="diagnoses">Diagnoses</TabsTrigger>
           <TabsTrigger value="allergies">Allergies</TabsTrigger>
-          <TabsTrigger value="history">Medical History</TabsTrigger>
+          <TabsTrigger value="medicalHistory">Medical History</TabsTrigger>
+          <TabsTrigger value="socialHistory">Social History</TabsTrigger>
+          <TabsTrigger value="familyHistory">Family History</TabsTrigger>
+          <TabsTrigger value="vitals">Flow Sheet (Vital Trends)</TabsTrigger>
+          <TabsTrigger value="careTeam">Care Coordination</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="contact" className="space-y-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-xl">Contact Information</CardTitle>
-                {!isEditing ? (
-                  <Button onClick={() => setIsEditing(true)}>Edit</Button>
-                ) : (
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-                    <Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="addressLine1"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address Line 1</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="addressLine2"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address Line 2</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zip Code</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="cellPhone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cell Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="homePhone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Home Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} placeholder="Add" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="workPhone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Work Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} readOnly={!isEditing} placeholder="Add" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <h3 className="font-semibold mb-4">Emergency Contact</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="emergencyContactName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} readOnly={!isEditing} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="emergencyContactPhone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone</FormLabel>
-                            <FormControl>
-                              <Input {...field} readOnly={!isEditing} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="emergencyContactEmail"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input {...field} readOnly={!isEditing} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="emergencyContactRelationship"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Relationship</FormLabel>
-                            <FormControl>
-                              <Input {...field} readOnly={!isEditing} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Care Coordination</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="family-physician">
-                  <AccordionTrigger className="hover:no-underline">
-                    Family physician / PCP
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="text-sm text-gray-500 italic">No provider information available</div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="mental-health">
-                  <AccordionTrigger className="hover:no-underline">
-                    Mental health provider(s)
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="text-sm text-gray-500 italic">No provider information available</div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="other-providers">
-                  <AccordionTrigger className="hover:no-underline">
-                    Other Healthcare provider(s)
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <div className="border p-3 rounded-md">
-                        <div className="flex justify-between">
-                          <div>
-                            <div className="font-medium">Frank Hua</div>
-                            <div className="text-sm text-gray-600">Specialty: Primary Care Physician</div>
-                            <div className="text-sm">Phone: (713) 442-1700</div>
-                          </div>
-                          {isEditing && (
-                            <Button variant="outline" size="sm">Edit</Button>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="border p-3 rounded-md">
-                        <div className="flex justify-between">
-                          <div>
-                            <div className="font-medium">Jeffery Junenu</div>
-                            <div className="text-sm text-gray-600">Specialty: Gastroenterologist</div>
-                            <div className="text-sm">Phone: (713) 442-1700</div>
-                          </div>
-                          {isEditing && (
-                            <Button variant="outline" size="sm">Edit</Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="pharmacy">
-                  <AccordionTrigger className="hover:no-underline">
-                    Preferred pharmacy
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="text-sm text-gray-500 italic">No pharmacy information available</div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="diagnoses">
+        {/* Diagnoses Tab */}
+        <TabsContent value="diagnoses" className="space-y-6">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl">Diagnoses</CardTitle>
-                <Button>Edit diagnoses</Button>
+                <Button onClick={() => openDialog("diagnoses")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add diagnosis
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -354,6 +93,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                         <TableHead>Date</TableHead>
                         <TableHead>Code</TableHead>
                         <TableHead>Description</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -361,26 +101,51 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                         <TableCell>April 22, 2025</TableCell>
                         <TableCell>R53.82</TableCell>
                         <TableCell>Chronic fatigue, unspecified</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>April 22, 2025</TableCell>
                         <TableCell>G43.009</TableCell>
                         <TableCell>Migraine without aura, not intractable, without status migrainosus</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>April 22, 2025</TableCell>
                         <TableCell>G89.4</TableCell>
                         <TableCell>Chronic pain syndrome</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>April 22, 2025</TableCell>
                         <TableCell>F41.1</TableCell>
                         <TableCell>Generalized anxiety disorder</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>April 22, 2025</TableCell>
                         <TableCell>F32.A</TableCell>
                         <TableCell>Depression, unspecified</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -405,12 +170,15 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
           </Card>
         </TabsContent>
         
+        {/* Allergies Tab */}
         <TabsContent value="allergies">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl">Allergies</CardTitle>
-                <Button>Edit allergies</Button>
+                <Button onClick={() => openDialog("allergies")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add allergy
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -425,19 +193,40 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                 <TabsContent value="drug">
                   <div className="space-y-2">
                     <div className="p-3 border rounded-md">
-                      <div className="font-medium">aspirin</div>
-                      <div className="text-sm text-gray-600">Status: Active</div>
-                      <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="font-medium">aspirin</div>
+                          <div className="text-sm text-gray-600">Status: Active</div>
+                          <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="p-3 border rounded-md">
-                      <div className="font-medium">codeine</div>
-                      <div className="text-sm text-gray-600">Status: Active</div>
-                      <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="font-medium">codeine</div>
+                          <div className="text-sm text-gray-600">Status: Active</div>
+                          <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="p-3 border rounded-md">
-                      <div className="font-medium">morphine</div>
-                      <div className="text-sm text-gray-600">Status: Active</div>
-                      <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="font-medium">morphine</div>
+                          <div className="text-sm text-gray-600">Status: Active</div>
+                          <div className="text-sm text-gray-600">Reaction: Unknown</div>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -458,12 +247,15 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
           </Card>
         </TabsContent>
         
-        <TabsContent value="history">
+        {/* Medical History Tab */}
+        <TabsContent value="medicalHistory">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-xl">Medical and Surgical History</CardTitle>
-                <Button>Edit record</Button>
+                <CardTitle className="text-xl">Medical History</CardTitle>
+                <Button onClick={() => openDialog("medicalHistory")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add medical history
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -474,11 +266,31 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-2">
-                      <p className="font-medium">Conditions</p>
+                      <div className="flex justify-between mb-4">
+                        <p className="font-medium">Conditions</p>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-3 w-3 mr-2" /> Edit
+                        </Button>
+                      </div>
                       <p className="text-sm">
                         Asthma, Non-Alcoholic Fatty Liver Disease (NAFLD), Cardiac Arrhythmia, Chronic Post Traumatic Headache, Migraine, Tension Headache, Crohn's Disease, Ulcerative Colitis, Stomach Ulcer, Hiatal Hernia, Gastro-Esophageal Reflux Disease (GERD), Autoimmune Disorders (Including Arthritis), Ear, Nose, or Throat Disorder, Chronic Pain, Gastrointestinal Disorder, Headaches (Including Migraines), Heart Condition, Liver Disease (Including Gallbladder), High Blood Pressure, Obesity, Lung/Respiratory Disorder, Unintentional Weight Gain
                       </p>
                     </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="surgeries">
+                  <AccordionTrigger className="hover:no-underline">
+                    Surgical History
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex justify-between mb-4">
+                      <p>Surgical Procedures</p>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-3 w-3 mr-2" /> Add surgery
+                      </Button>
+                    </div>
+                    <div className="text-sm text-gray-500 italic">No surgical history recorded</div>
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -496,12 +308,38 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                   </AccordionContent>
                 </AccordionItem>
                 
-                <AccordionItem value="surgical">
+                <AccordionItem value="immunizations">
                   <AccordionTrigger className="hover:no-underline">
-                    Surgical History
+                    Immunization History
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="text-sm text-gray-500 italic">No surgical history recorded</div>
+                    <div className="flex justify-between mb-4">
+                      <p>Immunizations</p>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-3 w-3 mr-2" /> Add immunization
+                      </Button>
+                    </div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Immunization</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Nov 10, 2024</TableCell>
+                          <TableCell>Influenza vaccine</TableCell>
+                          <TableCell>Complete</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Aug 15, 2023</TableCell>
+                          <TableCell>COVID-19 Booster</TableCell>
+                          <TableCell>Complete</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </AccordionContent>
                 </AccordionItem>
                 
@@ -510,6 +348,12 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                     Additional notes
                   </AccordionTrigger>
                   <AccordionContent>
+                    <div className="flex justify-between mb-4">
+                      <p>Medical Notes</p>
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-3 w-3 mr-2" /> Edit
+                      </Button>
+                    </div>
                     <p>prediabetic.</p>
                   </AccordionContent>
                 </AccordionItem>
@@ -517,7 +361,364 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        {/* Social History Tab */}
+        <TabsContent value="socialHistory">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-xl">Social History</CardTitle>
+                <Button onClick={() => openDialog("socialHistory")}>
+                  <Edit className="mr-2 h-4 w-4" /> Edit social history
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium mb-2">Tobacco Use</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Status: Never smoker</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Alcohol Use</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Status: Non-drinker</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Recreational Drug Use</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Status: Denies use</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Physical Activity</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Frequency: 2x weekly</div>
+                    <div className="text-sm">Type: Walking</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Diet</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Type: No specific dietary pattern</div>
+                    <div className="text-sm">Notes: Patient reports trying to reduce sugar intake</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Occupation</h3>
+                  <div className="p-3 border rounded-md">
+                    <div className="text-sm">Current: Administrative Assistant</div>
+                    <div className="text-sm">Status: Full-time</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Family History Tab */}
+        <TabsContent value="familyHistory">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-xl">Family History</CardTitle>
+                <Button onClick={() => openDialog("familyHistory")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add family history
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Family Member</TableHead>
+                    <TableHead>Medical Condition</TableHead>
+                    <TableHead>Age of Onset</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Mother</TableCell>
+                    <TableCell>Hypertension</TableCell>
+                    <TableCell>45</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Father</TableCell>
+                    <TableCell>Type 2 Diabetes</TableCell>
+                    <TableCell>50</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Grandmother (maternal)</TableCell>
+                    <TableCell>Breast Cancer</TableCell>
+                    <TableCell>63</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Vitals Tab */}
+        <TabsContent value="vitals">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-xl">Flow Sheet (Vital Trends)</CardTitle>
+                <Button onClick={() => openDialog("vitals")}>
+                  <Plus className="mr-2 h-4 w-4" /> Add vitals
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="chart">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="chart">Chart View</TabsTrigger>
+                  <TabsTrigger value="table">Table View</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="chart">
+                  <div className="h-64 border rounded-md p-4 flex items-center justify-center bg-gray-50">
+                    <p className="text-gray-500">[Vital signs chart visualization would appear here]</p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="table">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>BP</TableHead>
+                        <TableHead>Pulse</TableHead>
+                        <TableHead>Resp</TableHead>
+                        <TableHead>Temp</TableHead>
+                        <TableHead>Height</TableHead>
+                        <TableHead>Weight</TableHead>
+                        <TableHead>BMI</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell>Apr 22, 2025</TableCell>
+                        <TableCell>135/85</TableCell>
+                        <TableCell>72</TableCell>
+                        <TableCell>16</TableCell>
+                        <TableCell>98.6°F</TableCell>
+                        <TableCell>5'6"</TableCell>
+                        <TableCell>165 lbs</TableCell>
+                        <TableCell>26.6</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Feb 15, 2025</TableCell>
+                        <TableCell>132/82</TableCell>
+                        <TableCell>74</TableCell>
+                        <TableCell>18</TableCell>
+                        <TableCell>98.2°F</TableCell>
+                        <TableCell>5'6"</TableCell>
+                        <TableCell>168 lbs</TableCell>
+                        <TableCell>27.1</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Nov 10, 2024</TableCell>
+                        <TableCell>128/80</TableCell>
+                        <TableCell>76</TableCell>
+                        <TableCell>16</TableCell>
+                        <TableCell>97.9°F</TableCell>
+                        <TableCell>5'6"</TableCell>
+                        <TableCell>170 lbs</TableCell>
+                        <TableCell>27.4</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Care Coordination Tab */}
+        <TabsContent value="careTeam">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Care Coordination</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="family-physician">
+                  <AccordionTrigger className="hover:no-underline">
+                    Family physician / PCP
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex justify-between mb-4">
+                      <div className="text-sm text-gray-500 italic">No provider information available</div>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-3 w-3 mr-2" /> Add provider
+                      </Button>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="mental-health">
+                  <AccordionTrigger className="hover:no-underline">
+                    Mental health provider(s)
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex justify-between mb-4">
+                      <div className="text-sm text-gray-500 italic">No provider information available</div>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-3 w-3 mr-2" /> Add provider
+                      </Button>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="other-providers">
+                  <AccordionTrigger className="hover:no-underline">
+                    Other Healthcare provider(s)
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between mb-4">
+                        <div>Current providers</div>
+                        <Button variant="outline" size="sm">
+                          <Plus className="h-3 w-3 mr-2" /> Add provider
+                        </Button>
+                      </div>
+                      <div className="border p-3 rounded-md">
+                        <div className="flex justify-between">
+                          <div>
+                            <div className="font-medium">Frank Hua</div>
+                            <div className="text-sm text-gray-600">Specialty: Primary Care Physician</div>
+                            <div className="text-sm">Phone: (713) 442-1700</div>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="border p-3 rounded-md">
+                        <div className="flex justify-between">
+                          <div>
+                            <div className="font-medium">Jeffery Junenu</div>
+                            <div className="text-sm text-gray-600">Specialty: Gastroenterologist</div>
+                            <div className="text-sm">Phone: (713) 442-1700</div>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="pharmacy">
+                  <AccordionTrigger className="hover:no-underline">
+                    Preferred pharmacy
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex justify-between mb-4">
+                      <div className="text-sm text-gray-500 italic">No pharmacy information available</div>
+                      <Button variant="outline" size="sm">
+                        <Plus className="h-3 w-3 mr-2" /> Add pharmacy
+                      </Button>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+      
+      {/* Dialog for adding new items */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogType === "diagnoses" && "Add New Diagnosis"}
+              {dialogType === "allergies" && "Add New Allergy"}
+              {dialogType === "medicalHistory" && "Add Medical History"}
+              {dialogType === "socialHistory" && "Edit Social History"}
+              {dialogType === "familyHistory" && "Add Family History"}
+              {dialogType === "vitals" && "Add Vital Signs"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {dialogType === "diagnoses" && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="search-icd" className="text-sm font-medium">
+                  Search ICD-10 Code or Description
+                </label>
+                <Input 
+                  id="search-icd"
+                  placeholder="Start typing to search..." 
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                />
+              </div>
+              
+              <div className="border rounded-md max-h-60 overflow-y-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredIcdCodes.map((code, i) => (
+                      <TableRow key={i}>
+                        <TableCell>{code.code}</TableCell>
+                        <TableCell>{code.description}</TableCell>
+                        <TableCell>
+                          <Button size="sm" onClick={() => setIsDialogOpen(false)}>
+                            Select
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              
+              <div className="flex justify-between pt-4">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+          
+          {/* Other dialog types would go here */}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

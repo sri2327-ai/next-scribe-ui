@@ -1,11 +1,13 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 interface PatientSettingsProps {
   patient: {
@@ -15,29 +17,235 @@ interface PatientSettingsProps {
   };
 }
 
+interface ContactFormValues {
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  email: string;
+  cellPhone: string;
+  homePhone: string;
+  workPhone: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactEmail: string;
+  emergencyContactRelationship: string;
+  emergencyContactAuth: boolean;
+}
+
 const PatientSettings: React.FC<PatientSettingsProps> = ({ patient }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const form = useForm<ContactFormValues>({
+    defaultValues: {
+      addressLine1: "3111 Hummingbird Ln",
+      addressLine2: "",
+      city: "Humble",
+      state: "Texas",
+      zipCode: "77396",
+      email: "kellylynn.aceves@yahoo.com",
+      cellPhone: "(832) 495-2856",
+      homePhone: "",
+      workPhone: "",
+      emergencyContactName: "Destiny aceves",
+      emergencyContactPhone: "(832) 874-7976",
+      emergencyContactEmail: "destiny.aceves@yahoo.com",
+      emergencyContactRelationship: "Daughter",
+      emergencyContactAuth: true
+    }
+  });
+
+  const onSubmit = (data: ContactFormValues) => {
+    console.log(data);
+    setIsEditing(false);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Contact Information</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl">Contact Information</CardTitle>
+            {!isEditing ? (
+              <Button onClick={() => setIsEditing(true)}>Edit</Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                <Button onClick={form.handleSubmit(onSubmit)}>Save</Button>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div>
-              <Label>Phone Number</Label>
-              <Input defaultValue={patient.phone} className="mt-1" />
-            </div>
-            <div>
-              <Label>Email Address</Label>
-              <Input defaultValue={patient.email} className="mt-1" />
-            </div>
-            <div className="flex justify-end">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                Update Contact Info
-              </Button>
-            </div>
-          </div>
+          <Form {...form}>
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="grid md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="addressLine1"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address Line 1</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="addressLine2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address Line 2</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="zipCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Zip Code</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="cellPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cell Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="homePhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Home Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} placeholder="Add" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="workPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Work Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly={!isEditing} placeholder="Add" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="pt-4 border-t">
+                <h3 className="font-semibold mb-4">Emergency Contact</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} readOnly={!isEditing} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} readOnly={!isEditing} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} readOnly={!isEditing} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactRelationship"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Relationship</FormLabel>
+                        <FormControl>
+                          <Input {...field} readOnly={!isEditing} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
 
