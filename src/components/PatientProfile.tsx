@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1397,9 +1398,974 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
   };
 
   return (
-    <div>
-      {/* Existing component code */}
-    </div>
+    <>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogType === "diagnoses" && "Add Diagnosis"}
+              {dialogType === "allergies" && "Add Allergy"}
+              {dialogType === "medicalHistory" && "Edit Medical History"}
+              {dialogType === "surgery" && "Add Surgery"}
+              {dialogType === "immunization" && "Add Immunization"}
+              {dialogType === "familyHistory" && "Add Family History"}
+              {dialogType === "socialHistory" && "Edit Social History"}
+              {dialogType === "vital" && "Add Vital Signs"}
+              {dialogType === "provider" && "Add Provider"}
+            </DialogTitle>
+          </DialogHeader>
+          {renderDialog()}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDetailView} onOpenChange={setIsDetailView}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Details</DialogTitle>
+          </DialogHeader>
+          {detailItem && (
+            <div className="space-y-4">
+              {Object.entries(detailItem).map(([key, value]) => 
+                key !== 'type' && key !== 'id' ? (
+                  <div key={key} className="grid grid-cols-2 gap-2">
+                    <div className="font-medium capitalize">{key}:</div>
+                    <div>{String(value)}</div>
+                  </div>
+                ) : null
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <div className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="diagnoses">Diagnoses</TabsTrigger>
+            <TabsTrigger value="allergies">Allergies</TabsTrigger>
+            <TabsTrigger value="medicalHistory">Medical History</TabsTrigger>
+            <TabsTrigger value="socialHistory">Social History</TabsTrigger>
+            <TabsTrigger value="familyHistory">Family History</TabsTrigger>
+            <TabsTrigger value="vitals">Vitals</TabsTrigger>
+            <TabsTrigger value="careTeam">Care Team</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="diagnoses" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Diagnoses</h2>
+              <Button
+                size="sm"
+                onClick={() => openDialog("diagnoses")}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Add Diagnosis
+              </Button>
+            </div>
+
+            {diagnoses.active.length > 0 && (
+              <Card>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-md">Active Diagnoses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {diagnoses.active.map((diagnosis) => (
+                        <TableRow key={diagnosis.id}>
+                          <TableCell>{diagnosis.date}</TableCell>
+                          <TableCell>{diagnosis.code}</TableCell>
+                          <TableCell>{diagnosis.description}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => viewDetails(diagnosis, "diagnosis")}
+                              className="h-8 w-8 p-0 mr-2"
+                            >
+                              <FileSearch className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteDiagnosis(diagnosis.id, "active")}
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+
+            {diagnoses.inactive.length > 0 && (
+              <Card>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-md">Inactive Diagnoses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {diagnoses.inactive.map((diagnosis) => (
+                        <TableRow key={diagnosis.id}>
+                          <TableCell>{diagnosis.date}</TableCell>
+                          <TableCell>{diagnosis.code}</TableCell>
+                          <TableCell>{diagnosis.description}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => viewDetails(diagnosis, "diagnosis")}
+                              className="h-8 w-8 p-0 mr-2"
+                            >
+                              <FileSearch className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteDiagnosis(diagnosis.id, "inactive")}
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+
+            {diagnoses.resolved.length > 0 && (
+              <Card>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-md">Resolved Diagnoses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {diagnoses.resolved.map((diagnosis) => (
+                        <TableRow key={diagnosis.id}>
+                          <TableCell>{diagnosis.date}</TableCell>
+                          <TableCell>{diagnosis.code}</TableCell>
+                          <TableCell>{diagnosis.description}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => viewDetails(diagnosis, "diagnosis")}
+                              className="h-8 w-8 p-0 mr-2"
+                            >
+                              <FileSearch className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteDiagnosis(diagnosis.id, "resolved")}
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+
+            {diagnoses.active.length === 0 && diagnoses.inactive.length === 0 && diagnoses.resolved.length === 0 && (
+              <Card>
+                <CardContent className="py-8 flex flex-col items-center justify-center text-center">
+                  <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Diagnoses Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No diagnoses have been added to this patient's record.
+                  </p>
+                  <Button onClick={() => openDialog("diagnoses")}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Diagnosis
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {diagnoses.reported && (
+              <Card>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-md">Patient Reported Conditions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Textarea
+                    readOnly
+                    value={diagnoses.reported}
+                    className="min-h-[150px]"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="allergies" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Allergies</h2>
+              <Button
+                size="sm"
+                onClick={() => openDialog("allergies")}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Add Allergy
+              </Button>
+            </div>
+
+            <Accordion type="multiple" className="w-full">
+              {Object.entries(allergies).map(([type, items]) => (
+                <AccordionItem key={type} value={type}>
+                  <AccordionTrigger className="capitalize">
+                    {type} Allergies {items.length > 0 && <Badge className="ml-2">{items.length}</Badge>}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {items.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Reaction</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {items.map((allergy) => (
+                            <TableRow key={allergy.id}>
+                              <TableCell>{allergy.name}</TableCell>
+                              <TableCell>{allergy.reaction || "Not recorded"}</TableCell>
+                              <TableCell>{allergy.status}</TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => viewDetails(allergy, "allergy")}
+                                  className="h-8 w-8 p-0 mr-2"
+                                >
+                                  <FileSearch className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteAllergy(allergy.id, type)}
+                                  className="h-8 w-8 p-0 text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        No {type} allergies recorded
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
+            {Object.values(allergies).flat().length === 0 && (
+              <Card>
+                <CardContent className="py-8 flex flex-col items-center justify-center text-center">
+                  <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Allergies Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No allergies have been added to this patient's record.
+                  </p>
+                  <Button onClick={() => openDialog("allergies")}>
+                    <Plus className="h-4 w-4 mr-2" /> Add Allergy
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="medicalHistory" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Medical History</h2>
+              {isEditing === "medicalHistory" ? (
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    form="medical-history-form"
+                    type="submit"
+                  >
+                    <Save className="h-4 w-4 mr-2" /> Save
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsEditing("medicalHistory")}
+                  >
+                    <Edit className="h-4 w-4 mr-2" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => openDialog("surgery")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Add Surgery
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => openDialog("immunization")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Add Immunization
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {isEditing === "medicalHistory" ? (
+              <Form {...medicalHistoryForm}>
+                <form
+                  id="medical-history-form"
+                  onSubmit={medicalHistoryForm.handleSubmit(handleUpdateMedicalHistory)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={medicalHistoryForm.control}
+                    name="conditions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Medical Conditions</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={6} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={medicalHistoryForm.control}
+                    name="isPregnant"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel>Currently pregnant or nursing</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={medicalHistoryForm.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Additional Notes</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+            ) : (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader className="py-3">
+                    <CardTitle className="text-md">Medical Conditions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      readOnly
+                      value={medicalHistory.conditions}
+                      className="min-h-[100px]"
+                    />
+                  </CardContent>
+                </Card>
+
+                {medicalHistory.pregnancies.isPregnant && (
+                  <div className="flex items-center p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                    <AlertTriangle className="h-4 w-4 text-yellow-500 mr-2" />
+                    Patient is currently pregnant or nursing
+                  </div>
+                )}
+
+                <Card>
+                  <CardHeader className="py-3">
+                    <div className="flex justify-between">
+                      <CardTitle className="text-md">Surgeries</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {medicalHistory.surgeries.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Procedure</TableHead>
+                            <TableHead>Provider</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {medicalHistory.surgeries.map((surgery) => (
+                            <TableRow key={surgery.id}>
+                              <TableCell>{surgery.date}</TableCell>
+                              <TableCell>{surgery.procedure}</TableCell>
+                              <TableCell>{surgery.provider}</TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => viewDetails(surgery, "surgery")}
+                                  className="h-8 w-8 p-0 mr-2"
+                                >
+                                  <FileSearch className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteSurgery(surgery.id)}
+                                  className="h-8 w-8 p-0 text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        No surgeries recorded
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="py-3">
+                    <div className="flex justify-between">
+                      <CardTitle className="text-md">Immunizations</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {medicalHistory.immunizations.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Immunization</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {medicalHistory.immunizations.map((immunization) => (
+                            <TableRow key={immunization.id}>
+                              <TableCell>{immunization.date}</TableCell>
+                              <TableCell>{immunization.name}</TableCell>
+                              <TableCell>
+                                <Badge variant={immunization.status === "Complete" ? "default" : "outline"}>
+                                  {immunization.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteImmunization(immunization.id)}
+                                  className="h-8 w-8 p-0 text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        No immunizations recorded
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {medicalHistory.notes && (
+                  <Card>
+                    <CardHeader className="py-3">
+                      <CardTitle className="text-md">Additional Notes</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>{medicalHistory.notes}</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="socialHistory" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Social History</h2>
+              {isEditing === "socialHistory" ? (
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    form="social-history-form"
+                    type="submit"
+                  >
+                    <Save className="h-4 w-4 mr-2" /> Save
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setIsEditing("socialHistory")}
+                >
+                  <Edit className="h-4 w-4 mr-2" /> Edit
+                </Button>
+              )}
+            </div>
+
+            {isEditing === "socialHistory" ? (
+              <Form {...socialHistoryForm}>
+                <form
+                  id="social-history-form"
+                  onSubmit={socialHistoryForm.handleSubmit(handleUpdateSocialHistory)}
+                  className="space-y-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="tobaccoUse"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tobacco Use</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="alcoholUse"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Alcohol Use</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="drugUse"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Drug Use</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="occupation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Occupation</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="occupationStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Employment Status</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="activityFrequency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Activity Frequency</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="activityType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Activity Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="dietType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Diet Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={socialHistoryForm.control}
+                      name="dietNotes"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Diet Notes</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </form>
+              </Form>
+            ) : (
+              <div className="space-y-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Tobacco Use</h3>
+                        <p>{socialHistory.tobaccoUse}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Alcohol Use</h3>
+                        <p>{socialHistory.alcoholUse}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Drug Use</h3>
+                        <p>{socialHistory.drugUse}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Occupation</h3>
+                        <p>{socialHistory.occupation.current} ({socialHistory.occupation.status})</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="py-3">
+                    <CardTitle className="text-md">Lifestyle</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Physical Activity</h3>
+                        <p>{socialHistory.physicalActivity.type}, {socialHistory.physicalActivity.frequency}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium">Diet</h3>
+                        <p>{socialHistory.diet.type}</p>
+                        <p className="text-sm text-muted-foreground">{socialHistory.diet.notes}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="familyHistory" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Family History</h2>
+              <Button
+                size="sm"
+                onClick={() => openDialog("familyHistory")}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Add Family History
+              </Button>
+            </div>
+
+            <Card>
+              <CardContent className="pt-6">
+                {familyHistory.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Family Member</TableHead>
+                        <TableHead>Condition</TableHead>
+                        <TableHead>Age of Onset</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {familyHistory.map((history) => (
+                        <TableRow key={history.id}>
+                          <TableCell>{history.member}</TableCell>
+                          <TableCell>{history.condition}</TableCell>
+                          <TableCell>{history.ageOfOnset}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => viewDetails(history, "familyHistory")}
+                              className="h-8 w-8 p-0 mr-2"
+                            >
+                              <FileSearch className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteFamilyHistory(history.id)}
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="py-4 text-center text-sm text-muted-foreground">
+                    No family history recorded
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="vitals" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Vitals</h2>
+              <Button
+                size="sm"
+                onClick={() => openDialog("vital")}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Add Vitals
+              </Button>
+            </div>
+
+            <Card>
+              <CardContent className="pt-6">
+                {vitals.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>BP</TableHead>
+                        <TableHead>Pulse</TableHead>
+                        <TableHead>Resp</TableHead>
+                        <TableHead>Temp</TableHead>
+                        <TableHead>Height</TableHead>
+                        <TableHead>Weight</TableHead>
+                        <TableHead>BMI</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vitals.map((vital) => (
+                        <TableRow key={vital.date}>
+                          <TableCell>{vital.date}</TableCell>
+                          <TableCell>{vital.bp}</TableCell>
+                          <TableCell>{vital.pulse}</TableCell>
+                          <TableCell>{vital.resp}</TableCell>
+                          <TableCell>{vital.temp}</TableCell>
+                          <TableCell>{vital.height}</TableCell>
+                          <TableCell>{vital.weight}</TableCell>
+                          <TableCell>{vital.bmi}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => viewDetails(vital, "vital")}
+                              className="h-8 w-8 p-0 mr-2"
+                            >
+                              <FileSearch className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteVital(vital.date)}
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="py-4 text-center text-sm text-muted-foreground">
+                    No vital signs recorded
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="careTeam" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Care Team</h2>
+              <Button
+                size="sm"
+                onClick={() => openDialog("provider")}
+                className="flex items-center gap-1"
+              >
+                <Plus className="h-4 w-4" /> Add Provider
+              </Button>
+            </div>
+
+            <Accordion type="multiple" className="w-full">
+              {Object.entries(careTeam).map(([type, providers]) => (
+                <AccordionItem key={type} value={type}>
+                  <AccordionTrigger className="capitalize">
+                    {type === "primaryCare"
+                      ? "Primary Care"
+                      : type === "mentalHealth"
+                      ? "Mental Health"
+                      : type === "otherProviders"
+                      ? "Other Providers"
+                      : "Pharmacy"}
+                    {providers.length > 0 && <Badge className="ml-2">{providers.length}</Badge>}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {providers.length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Specialty</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {providers.map((provider) => (
+                            <TableRow key={provider.id}>
+                              <TableCell>{provider.name}</TableCell>
+                              <TableCell>{provider.specialty}</TableCell>
+                              <TableCell>{provider.phone}</TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => viewDetails(provider, "provider")}
+                                  className="h-8 w-8 p-0 mr-2"
+                                >
+                                  <FileSearch className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteProvider(provider.id, type)}
+                                  className="h-8 w-8 p-0 text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="py-4 text-center text-sm text-muted-foreground">
+                        No providers recorded
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
   );
 };
 
