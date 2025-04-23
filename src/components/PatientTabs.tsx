@@ -7,8 +7,6 @@ import {
   FileImage, 
   MessageSquare, 
   Settings, 
-  User, 
-  FileSearch,
   ListCheck 
 } from "lucide-react";
 
@@ -34,7 +32,7 @@ const PatientTabs: React.FC<PatientTabsProps> = ({ tabs, activeTab, setActiveTab
       case "Settings":
         return <Settings className="w-4 h-4" strokeWidth={1.5} />;
       default:
-        return <FileSearch className="w-4 h-4" strokeWidth={1.5} />;
+        return <FileText className="w-4 h-4" strokeWidth={1.5} />;
     }
   };
 
