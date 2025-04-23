@@ -1,9 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Contact, Save } from "lucide-react";
 import { toast } from "sonner";
 
 interface PatientSettingsProps {
@@ -15,12 +17,55 @@ interface PatientSettingsProps {
 }
 
 const PatientSettings: React.FC<PatientSettingsProps> = ({ patient }) => {
+  const [contactInfo, setContactInfo] = useState({
+    phone: patient.phone,
+    email: patient.email
+  });
+
   const handleToggleChange = (settingName: string, value: boolean) => {
     toast.success(`${settingName} ${value ? "enabled" : "disabled"}`);
   };
 
+  const handleContactSave = () => {
+    toast.success("Contact information updated successfully");
+  };
+
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Contact className="h-5 w-5" />
+            Contact Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                value={contactInfo.phone}
+                onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={contactInfo.email}
+                onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
+              />
+            </div>
+            <Button onClick={handleContactSave} className="mt-4">
+              <Save className="h-4 w-4 mr-2" />
+              Save Contact Info
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Patient Portal Access</CardTitle>
