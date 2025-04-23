@@ -1,7 +1,16 @@
 
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clock, FileImage, MessageSquare, Settings, User, FileSearch } from "lucide-react";
+import { 
+  FileText, 
+  Clock, 
+  FileImage, 
+  MessageSquare, 
+  Settings, 
+  User, 
+  FileSearch,
+  ListCheck 
+} from "lucide-react";
 
 interface PatientTabsProps {
   tabs: string[];
@@ -17,7 +26,7 @@ const PatientTabs: React.FC<PatientTabsProps> = ({ tabs, activeTab, setActiveTab
       case "Timeline":
         return <Clock className="w-4 h-4" strokeWidth={1.5} />;
       case "Summary":
-        return <User className="w-4 h-4" strokeWidth={1.5} />;
+        return <ListCheck className="w-4 h-4" strokeWidth={1.5} />;
       case "Documents":
         return <FileImage className="w-4 h-4" strokeWidth={1.5} />;
       case "Messages":

@@ -7,7 +7,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useForm } from "react-hook-form";
-import { Plus, Edit, X, Save, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Plus, Edit, X, Save, ArrowLeft, AlertTriangle, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -915,30 +915,4 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                     <FormControl>
                       <Textarea {...field} placeholder="Additional notes..." />
                     </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-between pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">Add Surgery</Button>
-              </div>
-            </form>
-          </Form>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div>
-      {/* Main content */}
-    </div>
-  );
-};
-
-export default PatientProfile;
+                  </Form
