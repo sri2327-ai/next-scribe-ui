@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
@@ -12,6 +13,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import "./index.css";
 import ReportsPanel from "./components/ReportsPanel";
+import PatientPortal from "./pages/PatientPortal";
 
 const MainApp = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -96,6 +98,7 @@ const App: React.FC = () => {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/patient/*" element={<PatientPortal />} />
       <Route path="/" element={<MainApp />} />
       <Route path="*" element={<Navigate to="/signin" replace />} />
     </Routes>
