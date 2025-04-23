@@ -42,16 +42,16 @@ const EmailTemplateSettings = () => {
               <h4 className="font-medium mb-2">Available Variables</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="text-sm">
-                  <code className="bg-gray-100 px-1 py-0.5 rounded">{{'{{'}}patient_name{{'}}'}}</code> - Patient's full name
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">{"{{patient_name}}"}</code> - Patient's full name
                 </div>
                 <div className="text-sm">
-                  <code className="bg-gray-100 px-1 py-0.5 rounded">{{'{{'}}provider_name{{'}}'}}</code> - Provider's name
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">{"{{provider_name}}"}</code> - Provider's name
                 </div>
                 <div className="text-sm">
-                  <code className="bg-gray-100 px-1 py-0.5 rounded">{{'{{'}}next_appointment_date{{'}}'}}</code> - Next appointment date
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">{"{{next_appointment_date}}"}</code> - Next appointment date
                 </div>
                 <div className="text-sm">
-                  <code className="bg-gray-100 px-1 py-0.5 rounded">{{'{{'}}practice_name{{'}}'}}</code> - Practice name
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">{"{{practice_name}}"}</code> - Practice name
                 </div>
               </div>
             </div>
