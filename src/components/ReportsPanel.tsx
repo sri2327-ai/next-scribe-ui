@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Calendar, ChartBar } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FileText, Calendar, ChevronRight, ChevronLeft } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type ReportType = 'appointments' | 'notes';
 
@@ -23,94 +23,96 @@ const notesData = [
 ];
 
 const ReportsPanel = () => {
-  const [selectedReport, setSelectedReport] = useState<ReportType | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportType>('appointments');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
 
-  const handleGenerateReport = (type: ReportType) => {
-    setSelectedReport(type);
-    setIsDialogOpen(true);
-    setShowGraph(false);
-  };
-
   return (
-    <div className="flex-1 p-6 overflow-auto">
-      <h1 className="text-2xl font-bold mb-6">Clinical Reports</h1>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Appointment Reports
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Generate comprehensive reports for patient appointments, including attendance, types of visits, and scheduling patterns.
-            </p>
-            <Button onClick={() => handleGenerateReport('appointments')}>
-              Generate Report
-            </Button>
-          </CardContent>
-        </Card>
+    <div className="flex h-full">
+      <Collapsible
+        open={!sidebarCollapsed}
+        onOpenChange={(isOpen) => setSidebarCollapsed(!isOpen)}
+        className="min-h-full border-r bg-gray-50"
+      >
+        <div className="w-64 p-4 flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Report Types</h2>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="icon">
+                {sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent className="space-y-2">
+            <Card
+              className={`hover:bg-gray-100 cursor-pointer transition ${
+                selectedReport === 'appointments' ? 'bg-blue-50 border-blue-200' : ''
+              }`}
+              onClick={() => setSelectedReport('appointments')}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Calendar className="h-5 w-5" />
+                  Appointment Reports
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card
+              className={`hover:bg-gray-100 cursor-pointer transition ${
+                selectedReport === 'notes' ? 'bg-blue-50 border-blue-200' : ''
+              }`}
+              onClick={() => setSelectedReport('notes')}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FileText className="h-5 w-5" />
+                  Clinical Notes Reports
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Clinical Notes Reports
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Generate reports for clinical notes, including treatment progress, diagnoses, and patient outcomes.
-            </p>
-            <Button onClick={() => handleGenerateReport('notes')}>
-              Generate Report
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ChartBar className="h-5 w-5" />
-              {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
-            </DialogTitle>
-          </DialogHeader>
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">
+            {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
+          </h1>
           
-          {!showGraph ? (
-            selectedReport === 'appointments' ? (
+          <div className="mb-8 bg-white p-6 rounded-lg shadow-sm border">
+            {selectedReport === 'appointments' ? (
               <AppointmentReportContent onGenerate={() => setShowGraph(true)} />
             ) : (
               <NotesReportContent onGenerate={() => setShowGraph(true)} />
-            )
-          ) : (
-            <div className="h-[400px] mt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={selectedReport === 'appointments' ? appointmentData : notesData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    dataKey="count"
-                    fill={selectedReport === 'appointments' ? '#8884d8' : '#82ca9d'}
-                    name={selectedReport === 'appointments' ? 'Appointments' : 'Notes'}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+            )}
+          </div>
+
+          {showGraph && (
+            <div className="bg-white p-6 rounded-lg shadow-sm border">
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={selectedReport === 'appointments' ? appointmentData : notesData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="count"
+                      fill={selectedReport === 'appointments' ? '#8884d8' : '#82ca9d'}
+                      name={selectedReport === 'appointments' ? 'Appointments' : 'Notes'}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
     </div>
   );
 };
