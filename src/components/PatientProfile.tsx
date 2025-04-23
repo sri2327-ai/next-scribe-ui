@@ -663,7 +663,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
             )}
           </div>
         );
-      
+
       case "allergies":
         return (
           <Form {...allergyForm}>
@@ -915,3 +915,492 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                     <FormControl>
                       <Textarea {...field} placeholder="Additional notes..." />
                     </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Surgery</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "immunization":
+        return (
+          <Form {...immunizationForm}>
+            <form onSubmit={immunizationForm.handleSubmit(handleAddImmunization)} className="space-y-4 py-4">
+              <FormField
+                control={immunizationForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Immunization Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter immunization name" required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={immunizationForm.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={immunizationForm.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Complete">Complete</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="Failed">Failed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Immunization</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "familyHistory":
+        return (
+          <Form {...familyHistoryForm}>
+            <form onSubmit={familyHistoryForm.handleSubmit(handleAddFamilyHistory)} className="space-y-4 py-4">
+              <FormField
+                control={familyHistoryForm.control}
+                name="member"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Member</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter member name" required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={familyHistoryForm.control}
+                name="relationship"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Relationship</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter relationship" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={familyHistoryForm.control}
+                name="condition"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Condition</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter condition" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={familyHistoryForm.control}
+                name="ageOfOnset"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Age of Onset</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter age of onset" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={familyHistoryForm.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Add any notes about this family history entry..." />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Family History</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "socialHistory":
+        return (
+          <Form {...socialHistoryForm}>
+            <form onSubmit={socialHistoryForm.handleSubmit(handleUpdateSocialHistory)} className="space-y-4 py-4">
+              <FormField
+                control={socialHistoryForm.control}
+                name="tobaccoUse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tobacco Use</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter tobacco use status" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="alcoholUse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alcohol Use</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter alcohol use status" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="drugUse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Drug Use</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter drug use status" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="activityFrequency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Activity Frequency</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter activity frequency" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="activityType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Activity Type</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter activity type" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="dietType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Diet Type</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter diet type" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="dietNotes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Diet Notes</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Add any notes about this social history entry..." />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={socialHistoryForm.control}
+                name="occupation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Occupation</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter occupation" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Save Social History</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "vital":
+        return (
+          <Form {...vitalForm}>
+            <form onSubmit={vitalForm.handleSubmit(handleAddVital)} className="space-y-4 py-4">
+              <FormField
+                control={vitalForm.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="bp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Blood Pressure</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter blood pressure" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="pulse"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pulse</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter pulse" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="resp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Respiratory Rate</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter respiratory rate" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="temp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temperature</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter temperature" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="height"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Height</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter height" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={vitalForm.control}
+                name="weight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Weight</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter weight" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Vital Signs</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "provider":
+        return (
+          <Form {...providerForm}>
+            <form onSubmit={providerForm.handleSubmit(handleAddProvider)} className="space-y-4 py-4">
+              <FormField
+                control={providerForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter provider name" required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={providerForm.control}
+                name="specialty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Specialty</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter provider specialty" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={providerForm.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter provider phone number" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={providerForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter provider email" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={providerForm.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter provider address" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={providerForm.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Provider Type</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select provider type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="primaryCare">Primary Care</SelectItem>
+                        <SelectItem value="mentalHealth">Mental Health</SelectItem>
+                        <SelectItem value="otherProviders">Other Providers</SelectItem>
+                        <SelectItem value="pharmacy">Pharmacy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Provider</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div>
+      {/* Existing component code */}
+    </div>
+  );
+};
+
+export default PatientProfile;
