@@ -28,18 +28,58 @@ const ReportsPanel = () => {
   const [showGraph, setShowGraph] = useState(false);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto p-4 md:p-6">
+          <h1 className="text-2xl font-bold mb-6">
+            {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
+          </h1>
+          
+          <div className="mb-8 bg-white p-4 md:p-6 rounded-lg shadow-sm border">
+            {selectedReport === 'appointments' ? (
+              <AppointmentReportContent onGenerate={() => setShowGraph(true)} />
+            ) : (
+              <NotesReportContent onGenerate={() => setShowGraph(true)} />
+            )}
+          </div>
+
+          {showGraph && (
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border">
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={selectedReport === 'appointments' ? appointmentData : notesData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="count"
+                      fill={selectedReport === 'appointments' ? '#8884d8' : '#82ca9d'}
+                      name={selectedReport === 'appointments' ? 'Appointments' : 'Notes'}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <Collapsible
         open={!sidebarCollapsed}
         onOpenChange={(isOpen) => setSidebarCollapsed(!isOpen)}
-        className="min-h-full border-r bg-gray-50"
+        className="min-h-full border-l bg-gray-50 absolute md:relative right-0 top-0"
       >
         <div className="w-64 p-4 flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Report Types</h2>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon">
-                {sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
+                {sidebarCollapsed ? <ChevronLeft /> : <ChevronRight />}
               </Button>
             </CollapsibleTrigger>
           </div>
@@ -73,46 +113,6 @@ const ReportsPanel = () => {
           </CollapsibleContent>
         </div>
       </Collapsible>
-
-      <div className="flex-1 p-6 overflow-auto">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">
-            {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
-          </h1>
-          
-          <div className="mb-8 bg-white p-6 rounded-lg shadow-sm border">
-            {selectedReport === 'appointments' ? (
-              <AppointmentReportContent onGenerate={() => setShowGraph(true)} />
-            ) : (
-              <NotesReportContent onGenerate={() => setShowGraph(true)} />
-            )}
-          </div>
-
-          {showGraph && (
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={selectedReport === 'appointments' ? appointmentData : notesData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar
-                      dataKey="count"
-                      fill={selectedReport === 'appointments' ? '#8884d8' : '#82ca9d'}
-                      name={selectedReport === 'appointments' ? 'Appointments' : 'Notes'}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
