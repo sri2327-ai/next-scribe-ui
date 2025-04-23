@@ -915,3 +915,30 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                     <FormControl>
                       <Textarea {...field} placeholder="Additional notes..." />
                     </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Surgery</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div>
+      {renderDialog()}
+    </div>
+  );
+};
+
+export default PatientProfile;
