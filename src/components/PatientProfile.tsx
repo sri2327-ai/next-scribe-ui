@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -936,7 +937,296 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
 
   return (
     <div>
-      {renderDialog()}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogType === "diagnoses" && "Add Diagnosis"}
+              {dialogType === "allergies" && "Add Allergy"}
+              {dialogType === "medicalHistory" && "Edit Medical History"}
+              {dialogType === "surgery" && "Add Surgery"}
+              {dialogType === "immunization" && "Add Immunization"}
+              {dialogType === "familyHistory" && "Add Family History"}
+              {dialogType === "vitals" && "Add Vital Signs"}
+              {dialogType === "provider" && "Add Provider"}
+            </DialogTitle>
+          </DialogHeader>
+          {renderDialog()}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDetailView} onOpenChange={setIsDetailView}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="mr-2" 
+                onClick={() => setIsDetailView(false)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              {detailItem?.type === 'diagnosis' && 'Diagnosis Details'}
+              {detailItem?.type === 'allergy' && 'Allergy Details'}
+              {detailItem?.type === 'provider' && 'Provider Details'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {detailItem && (
+              <div className="space-y-2">
+                {detailItem.code && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">ICD-10 Code</div>
+                    <div>{detailItem.code}</div>
+                  </div>
+                )}
+                {detailItem.description && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Description</div>
+                    <div>{detailItem.description}</div>
+                  </div>
+                )}
+                {detailItem.date && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Date</div>
+                    <div>{detailItem.date}</div>
+                  </div>
+                )}
+                {detailItem.name && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Name</div>
+                    <div>{detailItem.name}</div>
+                  </div>
+                )}
+                {detailItem.reaction && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Reaction</div>
+                    <div>{detailItem.reaction}</div>
+                  </div>
+                )}
+                {detailItem.specialty && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Specialty</div>
+                    <div>{detailItem.specialty}</div>
+                  </div>
+                )}
+                {detailItem.phone && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Phone</div>
+                    <div>{detailItem.phone}</div>
+                  </div>
+                )}
+                {detailItem.notes && (
+                  <div>
+                    <div className="font-medium text-sm text-gray-500">Notes</div>
+                    <div className="whitespace-pre-wrap">{detailItem.notes}</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-4 bg-gray-50 border">
+          <TabsTrigger value="diagnoses">Diagnoses</TabsTrigger>
+          <TabsTrigger value="allergies">Allergies</TabsTrigger>
+          <TabsTrigger value="medical">Medical History</TabsTrigger>
+          <TabsTrigger value="social">Social History</TabsTrigger>
+          <TabsTrigger value="family">Family History</TabsTrigger>
+          <TabsTrigger value="vitals">Vitals</TabsTrigger>
+          <TabsTrigger value="care">Care Team</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="diagnoses" className="mt-0">
+          <Card>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+              <CardTitle>Diagnoses</CardTitle>
+              <Button size="sm" onClick={() => openDialog('diagnoses')}>
+                <Plus className="mr-1 h-4 w-4" /> Add
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" defaultValue={["active"]}>
+                <AccordionItem value="active">
+                  <AccordionTrigger className="text-base font-medium">
+                    Active Problems ({diagnoses.active.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Code</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="w-[100px]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {diagnoses.active.length > 0 ? 
+                          diagnoses.active.map((diagnosis) => (
+                            <TableRow key={diagnosis.id}>
+                              <TableCell>{diagnosis.date}</TableCell>
+                              <TableCell>{diagnosis.code}</TableCell>
+                              <TableCell>{diagnosis.description}</TableCell>
+                              <TableCell>
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => viewDetails(diagnosis, 'diagnosis')}
+                                  >
+                                    <FileSearch className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => handleDeleteDiagnosis(diagnosis.id, 'active')}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )) : (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center py-4 text-gray-500">
+                                No active problems recorded
+                              </TableCell>
+                            </TableRow>
+                          )
+                        }
+                      </TableBody>
+                    </Table>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="inactive">
+                  <AccordionTrigger className="text-base font-medium">
+                    Inactive Problems ({diagnoses.inactive.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Code</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="w-[100px]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {diagnoses.inactive.length > 0 ? 
+                          diagnoses.inactive.map((diagnosis) => (
+                            <TableRow key={diagnosis.id}>
+                              <TableCell>{diagnosis.date}</TableCell>
+                              <TableCell>{diagnosis.code}</TableCell>
+                              <TableCell>{diagnosis.description}</TableCell>
+                              <TableCell>
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => viewDetails(diagnosis, 'diagnosis')}
+                                  >
+                                    <FileSearch className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => handleDeleteDiagnosis(diagnosis.id, 'inactive')}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )) : (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center py-4 text-gray-500">
+                                No inactive problems recorded
+                              </TableCell>
+                            </TableRow>
+                          )
+                        }
+                      </TableBody>
+                    </Table>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="resolved">
+                  <AccordionTrigger className="text-base font-medium">
+                    Resolved Problems ({diagnoses.resolved.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Code</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead className="w-[100px]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {diagnoses.resolved.length > 0 ? 
+                          diagnoses.resolved.map((diagnosis) => (
+                            <TableRow key={diagnosis.id}>
+                              <TableCell>{diagnosis.date}</TableCell>
+                              <TableCell>{diagnosis.code}</TableCell>
+                              <TableCell>{diagnosis.description}</TableCell>
+                              <TableCell>
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => viewDetails(diagnosis, 'diagnosis')}
+                                  >
+                                    <FileSearch className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => handleDeleteDiagnosis(diagnosis.id, 'resolved')}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )) : (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center py-4 text-gray-500">
+                                No resolved problems recorded
+                              </TableCell>
+                            </TableRow>
+                          )
+                        }
+                      </TableBody>
+                    </Table>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="reported">
+                  <AccordionTrigger className="text-base font-medium">
+                    Patient Reported Problems
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="p-3 whitespace-pre-wrap text-gray-700">
+                      {diagnoses.reported || "No patient reported problems"}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
