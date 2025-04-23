@@ -29,56 +29,58 @@ const ReportsPanel = () => {
   const [showGraph, setShowGraph] = useState(false);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full w-full">
       {/* Left sidebar */}
       <Collapsible
         open={!sidebarCollapsed}
         onOpenChange={(isOpen) => setSidebarCollapsed(!isOpen)}
-        className="min-h-full border-r bg-gray-50 relative"
+        className="h-full border-r bg-gray-50 relative"
       >
-        <div className="w-64 p-4 flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Report Types</h2>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon">
-                {sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
-              </Button>
-            </CollapsibleTrigger>
+        <div className={`h-full ${sidebarCollapsed ? 'w-12' : 'w-64'} transition-all duration-300`}>
+          <div className="p-4 flex flex-col h-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className={`text-lg font-semibold ${sidebarCollapsed ? 'hidden' : 'block'}`}>Report Types</h2>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  {sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="space-y-2 flex-1">
+              <Card
+                className={`hover:bg-gray-100 cursor-pointer transition ${
+                  selectedReport === 'appointments' ? 'bg-blue-50 border-blue-200' : ''
+                }`}
+                onClick={() => setSelectedReport('appointments')}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Calendar className="h-5 w-5" />
+                    Appointment Reports
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+              <Card
+                className={`hover:bg-gray-100 cursor-pointer transition ${
+                  selectedReport === 'notes' ? 'bg-blue-50 border-blue-200' : ''
+                }`}
+                onClick={() => setSelectedReport('notes')}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <FileText className="h-5 w-5" />
+                    Clinical Notes Reports
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </CollapsibleContent>
           </div>
-          <CollapsibleContent className="space-y-2">
-            <Card
-              className={`hover:bg-gray-100 cursor-pointer transition ${
-                selectedReport === 'appointments' ? 'bg-blue-50 border-blue-200' : ''
-              }`}
-              onClick={() => setSelectedReport('appointments')}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Calendar className="h-5 w-5" />
-                  Appointment Reports
-                </CardTitle>
-              </CardHeader>
-            </Card>
-            <Card
-              className={`hover:bg-gray-100 cursor-pointer transition ${
-                selectedReport === 'notes' ? 'bg-blue-50 border-blue-200' : ''
-              }`}
-              onClick={() => setSelectedReport('notes')}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-5 w-5" />
-                  Clinical Notes Reports
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </CollapsibleContent>
         </div>
       </Collapsible>
 
       {/* Main content area */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-7xl mx-auto p-4 md:p-6">
+      <div className="flex-1 overflow-auto h-full w-full">
+        <div className="h-full max-w-full p-4 md:p-6">
           <h1 className="text-2xl font-bold mb-6">
             {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
           </h1>
@@ -93,7 +95,7 @@ const ReportsPanel = () => {
 
           {showGraph && (
             <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border">
-              <div className="h-[400px]">
+              <div className="h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={selectedReport === 'appointments' ? appointmentData : notesData}
@@ -211,3 +213,4 @@ const NotesReportContent = ({ onGenerate }: { onGenerate: () => void }) => {
 };
 
 export default ReportsPanel;
+
