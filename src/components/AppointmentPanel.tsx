@@ -1,11 +1,11 @@
-
 import React, { useMemo, useState } from "react";
 import { ViewMode, Appointment } from "../types";
 import DayView from "./views/DayView";
 import WeekView from "./views/WeekView";
 import MonthView from "./views/MonthView";
-import { ChevronLeft, ChevronRight, Plus, Calendar, Filter, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar, Filter, CalendarDays, Printer, FileDown } from "lucide-react";
 import AppointmentRequestsDrawer from "./AppointmentRequestsDrawer";
+import { toast } from "sonner";
 
 function getTimezoneDisplay() {
   try {
@@ -53,7 +53,6 @@ const AppointmentPanel: React.FC<Props> = ({
     [appointments, selectedPatient]
   );
 
-  // For panel title
   let panelTitle: string = "";
   if (viewMode === "day") {
     panelTitle = currentDate.toLocaleDateString("en-US", {
@@ -82,7 +81,6 @@ const AppointmentPanel: React.FC<Props> = ({
     });
   }
 
-  // Navigation
   function handleNav(direction: "back" | "forward") {
     const base = new Date(currentDate);
     if (viewMode === "day") {
@@ -105,11 +103,35 @@ const AppointmentPanel: React.FC<Props> = ({
 
   const timeZone = getTimezoneDisplay();
 
+  const handlePrint = () => {
+    window.print();
+    toast.success("Printing schedule...");
+  };
+
+  const handleExport = () => {
+    const appointmentsData = appointments.map(apt => ({
+      date: apt.date,
+      time: apt.time,
+      patient: apt.patient,
+      type: apt.type,
+      location: apt.location
+    }));
+
+    const blob = new Blob([JSON.stringify(appointmentsData, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `appointments-${currentDate.toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    toast.success("Appointments exported successfully");
+  };
+
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
-      {/* Two-row header */}
       <div className="p-4 border-b bg-white/80">
-        {/* First row: left (actions/filters), right (view toggles) */}
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 items-center">
           <div className="flex flex-wrap items-center gap-2.5">
             <button
@@ -117,6 +139,22 @@ const AppointmentPanel: React.FC<Props> = ({
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
             >
               <Plus className="w-5 h-5" /> Add Appointment
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              title="Print Schedule"
+            >
+              <Printer className="w-5 h-5" />
+              Print
+            </button>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              title="Export Appointments"
+            >
+              <FileDown className="w-5 h-5" />
+              Export
             </button>
             <select
               value={selectedPatient}
@@ -174,7 +212,6 @@ const AppointmentPanel: React.FC<Props> = ({
             </div>
           </div>
         </div>
-        {/* Second row: date/title & timezone */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-y-2">
           <span className="flex items-center gap-2">
             <span
@@ -186,20 +223,17 @@ const AppointmentPanel: React.FC<Props> = ({
                 ({timeZone})
               </span>
             </span>
-            {/* Appointment Requests icon */}
             <button
               title="View Appointment Requests"
               className="ml-4 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition"
               onClick={() => setShowRequests(true)}
             >
-              {/* CalendarDays icon from lucide */}
               <CalendarDays className="w-6 h-6 text-blue-700" />
             </button>
           </span>
         </div>
       </div>
       <AppointmentRequestsDrawer open={showRequests} onClose={() => setShowRequests(false)} />
-      {/* Views */}
       <div
         className="p-4 overflow-y-auto flex-1"
         onClick={handlePanelBgClick}
@@ -218,5 +252,5 @@ const AppointmentPanel: React.FC<Props> = ({
     </main>
   );
 };
-export default AppointmentPanel;
 
+export default AppointmentPanel;
