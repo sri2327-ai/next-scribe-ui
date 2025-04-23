@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,54 @@ const ReportsPanel = () => {
   const [showGraph, setShowGraph] = useState(false);
 
   return (
-    <div className="flex h-full relative">
+    <div className="flex h-full">
+      {/* Left sidebar */}
+      <Collapsible
+        open={!sidebarCollapsed}
+        onOpenChange={(isOpen) => setSidebarCollapsed(!isOpen)}
+        className="min-h-full border-r bg-gray-50 relative"
+      >
+        <div className="w-64 p-4 flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Report Types</h2>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="icon">
+                {sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent className="space-y-2">
+            <Card
+              className={`hover:bg-gray-100 cursor-pointer transition ${
+                selectedReport === 'appointments' ? 'bg-blue-50 border-blue-200' : ''
+              }`}
+              onClick={() => setSelectedReport('appointments')}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Calendar className="h-5 w-5" />
+                  Appointment Reports
+                </CardTitle>
+              </CardHeader>
+            </Card>
+            <Card
+              className={`hover:bg-gray-100 cursor-pointer transition ${
+                selectedReport === 'notes' ? 'bg-blue-50 border-blue-200' : ''
+              }`}
+              onClick={() => setSelectedReport('notes')}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FileText className="h-5 w-5" />
+                  Clinical Notes Reports
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+
+      {/* Main content area */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto p-4 md:p-6">
           <h1 className="text-2xl font-bold mb-6">
@@ -68,51 +116,6 @@ const ReportsPanel = () => {
           )}
         </div>
       </div>
-
-      <Collapsible
-        open={!sidebarCollapsed}
-        onOpenChange={(isOpen) => setSidebarCollapsed(!isOpen)}
-        className="min-h-full border-l bg-gray-50 absolute md:relative right-0 top-0"
-      >
-        <div className="w-64 p-4 flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Report Types</h2>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="icon">
-                {sidebarCollapsed ? <ChevronLeft /> : <ChevronRight />}
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent className="space-y-2">
-            <Card
-              className={`hover:bg-gray-100 cursor-pointer transition ${
-                selectedReport === 'appointments' ? 'bg-blue-50 border-blue-200' : ''
-              }`}
-              onClick={() => setSelectedReport('appointments')}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Calendar className="h-5 w-5" />
-                  Appointment Reports
-                </CardTitle>
-              </CardHeader>
-            </Card>
-            <Card
-              className={`hover:bg-gray-100 cursor-pointer transition ${
-                selectedReport === 'notes' ? 'bg-blue-50 border-blue-200' : ''
-              }`}
-              onClick={() => setSelectedReport('notes')}
-            >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-5 w-5" />
-                  Clinical Notes Reports
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </CollapsibleContent>
-        </div>
-      </Collapsible>
     </div>
   );
 };
@@ -120,7 +123,7 @@ const ReportsPanel = () => {
 const AppointmentReportContent = ({ onGenerate }: { onGenerate: () => void }) => {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Date Range</label>
           <select className="w-full p-2 border rounded">
@@ -165,7 +168,7 @@ const AppointmentReportContent = ({ onGenerate }: { onGenerate: () => void }) =>
 const NotesReportContent = ({ onGenerate }: { onGenerate: () => void }) => {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Date Range</label>
           <select className="w-full p-2 border rounded">
