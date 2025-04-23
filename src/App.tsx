@@ -87,8 +87,8 @@ const MainApp = () => {
       ) : (
         <div className="flex-1 flex justify-center items-center">
           <div className="bg-white shadow mt-24 p-12 rounded-xl text-center">
-            <h2 className="text-2xl font-semibold mb-4">{activeView} View</h2>
-            <p>This is the {activeView.toLowerCase()} view content.</p>
+            <h2 className="text-2xl font-semibold mb-4">{activeView}</h2>
+            <p>This is the {activeView} view content.</p>
           </div>
         </div>
       )}
