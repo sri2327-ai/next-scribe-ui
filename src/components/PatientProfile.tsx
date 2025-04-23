@@ -25,7 +25,6 @@ interface PatientProfileProps {
   };
 }
 
-// ICD-10 database sample
 const icdCodesDatabase = [
   { code: "R53.82", description: "Chronic fatigue, unspecified" },
   { code: "G43.009", description: "Migraine without aura, not intractable, without status migrainosus" },
@@ -45,7 +44,6 @@ const icdCodesDatabase = [
   { code: "Z90.49", description: "Acquired absence of other specified parts of digestive tract" },
 ];
 
-// Sample allergy data
 const allergiesDatabase = {
   drug: [
     { id: 1, name: "aspirin", status: "Active", reaction: "Unknown" },
@@ -57,7 +55,6 @@ const allergiesDatabase = {
   other: []
 };
 
-// Sample medical history data
 const medicalHistoryData = {
   conditions: "Asthma, Non-Alcoholic Fatty Liver Disease (NAFLD), Cardiac Arrhythmia, Chronic Post Traumatic Headache, Migraine, Tension Headache, Crohn's Disease, Ulcerative Colitis, Stomach Ulcer, Hiatal Hernia, Gastro-Esophageal Reflux Disease (GERD), Autoimmune Disorders (Including Arthritis), Ear, Nose, or Throat Disorder, Chronic Pain, Gastrointestinal Disorder, Headaches (Including Migraines), Heart Condition, Liver Disease (Including Gallbladder), High Blood Pressure, Obesity, Lung/Respiratory Disorder, Unintentional Weight Gain",
   surgeries: [],
@@ -69,14 +66,12 @@ const medicalHistoryData = {
   notes: "prediabetic."
 };
 
-// Sample family history data
 const familyHistoryData = [
   { id: 1, member: "Mother", condition: "Hypertension", ageOfOnset: "45" },
   { id: 2, member: "Father", condition: "Type 2 Diabetes", ageOfOnset: "50" },
   { id: 3, member: "Grandmother (maternal)", condition: "Breast Cancer", ageOfOnset: "63" },
 ];
 
-// Sample social history data
 const socialHistoryData = {
   tobaccoUse: "Never smoker",
   alcoholUse: "Non-drinker",
@@ -86,14 +81,12 @@ const socialHistoryData = {
   occupation: { current: "Administrative Assistant", status: "Full-time" }
 };
 
-// Sample vitals data
 const vitalsData = [
   { date: "Apr 22, 2025", bp: "135/85", pulse: "72", resp: "16", temp: "98.6°F", height: "5'6\"", weight: "165 lbs", bmi: "26.6" },
   { date: "Feb 15, 2025", bp: "132/82", pulse: "74", resp: "18", temp: "98.2°F", height: "5'6\"", weight: "168 lbs", bmi: "27.1" },
   { date: "Nov 10, 2024", bp: "128/80", pulse: "76", resp: "16", temp: "97.9°F", height: "5'6\"", weight: "170 lbs", bmi: "27.4" },
 ];
 
-// Sample care team data
 const careTeamData = {
   primaryCare: [],
   mentalHealth: [],
@@ -104,7 +97,6 @@ const careTeamData = {
   pharmacy: []
 };
 
-// Sample diagnoses data
 const diagnosesData = {
   active: [
     { id: 1, date: "April 22, 2025", code: "R53.82", description: "Chronic fatigue, unspecified" },
@@ -119,7 +111,6 @@ const diagnosesData = {
 };
 
 const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
-  // State management
   const [activeTab, setActiveTab] = useState("diagnoses");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState("");
@@ -130,7 +121,6 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
   const [isDetailView, setIsDetailView] = useState(false);
   const [detailItem, setDetailItem] = useState<any>(null);
 
-  // State for each data type
   const [diagnoses, setDiagnoses] = useState(diagnosesData);
   const [allergies, setAllergies] = useState(allergiesDatabase);
   const [medicalHistory, setMedicalHistory] = useState(medicalHistoryData);
@@ -139,7 +129,6 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
   const [vitals, setVitals] = useState(vitalsData);
   const [careTeam, setCareTeam] = useState(careTeamData);
 
-  // Forms
   const diagnosisForm = useForm({
     defaultValues: {
       code: "",
@@ -230,7 +219,7 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
       phone: "",
       email: "",
       address: "",
-      type: "primaryCare" // primaryCare, mentalHealth, otherProviders, pharmacy
+      type: "primaryCare"
     }
   });
 
@@ -916,3 +905,40 @@ const PatientProfile: React.FC<PatientProfileProps> = ({ patient }) => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={surgeryForm.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder="Additional notes..." />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Add Surgery</Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div>
+      {/* Main content */}
+    </div>
+  );
+};
+
+export default PatientProfile;
