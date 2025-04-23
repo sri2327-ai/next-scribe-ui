@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
@@ -12,6 +11,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import "./index.css";
+import ReportsPanel from "./components/ReportsPanel";
 
 const MainApp = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -71,6 +71,8 @@ const MainApp = () => {
         </>
       ) : activeView === "Patients" ? (
         <PatientsPanel />
+      ) : activeView === "Reports" ? (
+        <ReportsPanel />
       ) : (
         <div className="flex-1 flex justify-center items-center">
           <div className="bg-white shadow mt-24 p-12 rounded-xl text-center">
