@@ -4,16 +4,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface PatientSettingsProps {
   patient: {
     name: string;
+    phone: string;
+    email: string;
   };
 }
 
 const PatientSettings: React.FC<PatientSettingsProps> = ({ patient }) => {
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Contact Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label>Phone Number</Label>
+              <Input defaultValue={patient.phone} className="mt-1" />
+            </div>
+            <div>
+              <Label>Email Address</Label>
+              <Input defaultValue={patient.email} className="mt-1" />
+            </div>
+            <div className="flex justify-end">
+              <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                Update Contact Info
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Patient Portal Access</CardTitle>

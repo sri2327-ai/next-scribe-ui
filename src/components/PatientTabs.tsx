@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Clock, FileImage, MessageSquare, Settings, User } from "lucide-react";
 
 interface PatientTabsProps {
   tabs: string[];
@@ -12,19 +13,19 @@ const PatientTabs: React.FC<PatientTabsProps> = ({ tabs, activeTab, setActiveTab
   const getTabIcon = (tab: string) => {
     switch (tab) {
       case "Notes / Transcript":
-        return "📝";
+        return <FileText className="w-4 h-4" />;
       case "Timeline":
-        return "⏱️";
+        return <Clock className="w-4 h-4" />;
       case "Summary":
-        return "📊";
+        return <User className="w-4 h-4" />;
       case "Documents":
-        return "📄";
+        return <FileImage className="w-4 h-4" />;
       case "Messages":
-        return "💬";
+        return <MessageSquare className="w-4 h-4" />;
       case "Settings":
-        return "⚙️";
+        return <Settings className="w-4 h-4" />;
       default:
-        return "📋";
+        return null;
     }
   };
 

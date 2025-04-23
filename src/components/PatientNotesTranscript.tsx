@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Filter, Clock, Edit, ArrowDownAZ, ArrowUpAZ, ChevronRight, ChevronDown } from "lucide-react";
+import { Calendar, Filter, Clock, Edit, ArrowDownAZ, ArrowUpAZ, ChevronRight, ChevronLeft } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AppointmentType {
@@ -52,7 +51,7 @@ interface PatientNotesTranscriptProps {
 }
 
 const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient }) => {
-  const [openId, setOpenId] = useState<number | null>(sampleNotes[0].id);
+  const [selectedNote, setSelectedNote] = useState<(typeof sampleNotes)[0] | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editedNote, setEditedNote] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -104,6 +103,47 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
 
   const currentDetailNote = notes.find(note => note.id === detailView.noteId);
 
+  if (selectedNote) {
+    return (
+      <div className="h-full">
+        <div className="flex items-center gap-2 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSelectedNote(null)}
+            className="gap-1"
+          >
+            <ChevronLeft size={16} />
+            Back to Notes
+          </Button>
+          <h3 className="text-lg font-semibold">{selectedNote.appointmentLabel}</h3>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 h-[calc(100vh-200px)]">
+          <div className="border rounded-lg p-6 bg-white overflow-y-auto">
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium">Notes</h4>
+                <span className="text-sm text-gray-500">{selectedNote.date}</span>
+              </div>
+              <p className="text-sm text-gray-700">{selectedNote.note}</p>
+              <p className="text-sm text-gray-700 mt-2">{selectedNote.transcript}</p>
+            </div>
+          </div>
+
+          <div className="border rounded-lg p-6 bg-white overflow-y-auto">
+            <div className="mb-4">
+              <h4 className="font-medium mb-2">Transcript</h4>
+              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono bg-gray-50 p-4 rounded">
+                {selectedNote.transcript}
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -144,7 +184,7 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
           <div key={note.id} className="border rounded-lg hover:border-blue-300 transition-colors">
             <div 
               className="p-3 flex justify-between items-center cursor-pointer"
-              onClick={() => openDetailView(note)}
+              onClick={() => setSelectedNote(note)}
             >
               <div>
                 <div className="flex items-center">
