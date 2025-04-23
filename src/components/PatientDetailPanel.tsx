@@ -11,6 +11,7 @@ import PatientDocuments from "./PatientDocuments";
 import PatientSettings from "./PatientSettings";
 import MedicalHistory from "./MedicalHistory";
 import SocialHistory from "./SocialHistory";
+import { toast } from "sonner";
 
 interface AppointmentType {
   label: string;
@@ -19,6 +20,7 @@ interface AppointmentType {
   location: string;
   clinician: string;
 }
+
 interface PatientType {
   name: string;
   age: string;
