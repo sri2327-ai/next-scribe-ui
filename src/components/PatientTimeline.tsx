@@ -1,8 +1,14 @@
 
-import React from "react";
-import { Clock } from "lucide-react";
+import React, { useState } from "react";
+import { Clock, Plus, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PatientTimelineProps {
   patient: {
@@ -83,11 +89,22 @@ const getEventColor = (type: string) => {
 };
 
 const PatientTimeline: React.FC<PatientTimelineProps> = ({ patient }) => {
+  const [showAddAppointment, setShowAddAppointment] = useState(false);
+
   return (
     <div className="h-full">
-      <div className="flex items-center mb-4">
-        <Clock className="mr-2" />
-        <h3 className="text-lg font-semibold">Patient Timeline</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <Clock className="mr-2" />
+          <h3 className="text-lg font-semibold">Patient Timeline</h3>
+        </div>
+        <Button 
+          onClick={() => setShowAddAppointment(true)} 
+          className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
+        >
+          <Plus size={16} />
+          <span>Add Appointment</span>
+        </Button>
       </div>
       
       <ScrollArea className="h-[calc(100vh-250px)]">
@@ -116,6 +133,75 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patient }) => {
           ))}
         </div>
       </ScrollArea>
+
+      {/* Add Appointment Dialog */}
+      <Dialog open={showAddAppointment} onOpenChange={setShowAddAppointment}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Appointment</DialogTitle>
+          </DialogHeader>
+          <form className="space-y-4">
+            <div>
+              <Label htmlFor="appointment-type">Appointment Type</Label>
+              <Select defaultValue="therapy">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select appointment type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="therapy">Therapy Session</SelectItem>
+                  <SelectItem value="checkup">Regular Check-up</SelectItem>
+                  <SelectItem value="medication">Medication Review</SelectItem>
+                  <SelectItem value="emergency">Emergency Consultation</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="date">Date</Label>
+                <Input type="date" id="date" />
+              </div>
+              <div>
+                <Label htmlFor="time">Time</Label>
+                <Input type="time" id="time" />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="clinician">Clinician</Label>
+              <Select defaultValue="dr-smith">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select clinician" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dr-smith">Dr. Smith</SelectItem>
+                  <SelectItem value="dr-johnson">Dr. Johnson</SelectItem>
+                  <SelectItem value="dr-patel">Dr. Patel</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea id="notes" placeholder="Add any notes for this appointment" rows={3} />
+            </div>
+          </form>
+          <DialogFooter className="sm:justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAddAppointment(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => setShowAddAppointment(false)}
+              className="bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Schedule Appointment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

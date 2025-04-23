@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar, Filter, Clock, Edit, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import { Calendar, Filter, Clock, Edit, ArrowDownAZ, ArrowUpAZ, ChevronRight, ChevronDown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AppointmentType {
   label: string;
@@ -57,6 +58,10 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [notes, setNotes] = useState(sampleNotes);
+  const [detailView, setDetailView] = useState<{isOpen: boolean, noteId: number | null}>({
+    isOpen: false,
+    noteId: null
+  });
 
   const handleEditStart = (id: number, note: string) => {
     setEditingId(id);
@@ -89,6 +94,15 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
         ? dateA.getTime() - dateB.getTime() 
         : dateB.getTime() - dateA.getTime();
     });
+
+  const openDetailView = (note: typeof notes[0]) => {
+    setDetailView({
+      isOpen: true,
+      noteId: note.id
+    });
+  };
+
+  const currentDetailNote = notes.find(note => note.id === detailView.noteId);
 
   return (
     <div>
@@ -125,79 +139,132 @@ const PatientNotesTranscript: React.FC<PatientNotesTranscriptProps> = ({ patient
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3">
         {filteredAndSortedNotes.map((note) => (
-          <div key={note.id} className="border rounded-lg">
-            <button
-              className="w-full text-left p-3 flex justify-between items-center hover:bg-gray-50"
-              onClick={() => setOpenId(openId === note.id ? null : note.id)}
+          <div key={note.id} className="border rounded-lg hover:border-blue-300 transition-colors">
+            <div 
+              className="p-3 flex justify-between items-center cursor-pointer"
+              onClick={() => openDetailView(note)}
             >
-              <div className="flex items-center">
-                <span className="text-blue-700 font-medium">{note.appointmentLabel}</span>
-                <span className="mx-2 text-xs text-gray-400 flex items-center">
-                  <Calendar size={14} className="mr-1" />
-                  {note.date}
-                </span>
-                <span className="text-xs text-gray-400 flex items-center">
-                  <Clock size={14} className="mr-1" />
-                  {note.time}
-                </span>
-              </div>
-              <span className="text-sm text-gray-400">{openId === note.id ? "▲" : "▼"}</span>
-            </button>
-            {openId === note.id && (
-              <div className="p-4 bg-blue-50 border-t space-y-3">
-                <div>
-                  <div className="font-medium mb-2 flex items-center justify-between">
-                    <span>Note:</span>
-                    {editingId !== note.id && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditStart(note.id, note.note)}
-                        className="h-8 px-2"
-                      >
-                        <Edit size={16} className="mr-1" />
-                        Edit
-                      </Button>
-                    )}
-                  </div>
-                  {editingId === note.id ? (
-                    <div className="space-y-2">
-                      <Input
-                        value={editedNote}
-                        onChange={(e) => setEditedNote(e.target.value)}
-                        className="w-full"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setEditingId(null)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleEditSave(note.id)}
-                        >
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mb-3">{note.note}</div>
-                  )}
+              <div>
+                <div className="flex items-center">
+                  <span className="text-blue-700 font-medium">{note.appointmentLabel}</span>
+                  <span className="mx-2 text-xs text-gray-400 flex items-center">
+                    <Calendar size={14} className="mr-1" />
+                    {note.date}
+                  </span>
+                  <span className="text-xs text-gray-400 flex items-center">
+                    <Clock size={14} className="mr-1" />
+                    {note.time}
+                  </span>
                 </div>
-                <div>
-                  <div className="font-medium mb-1">Transcript:</div>
-                  <pre className="bg-gray-100 rounded px-3 py-2 whitespace-pre-wrap text-xs">{note.transcript}</pre>
-                </div>
+                <div className="mt-2 text-sm line-clamp-2">{note.note}</div>
               </div>
-            )}
+              <Button variant="ghost" size="sm" className="ml-2">
+                <ChevronRight size={16} />
+              </Button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* Detail View Dialog */}
+      <Dialog open={detailView.isOpen} onOpenChange={(open) => setDetailView({...detailView, isOpen: open})}>
+        <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Note Details</DialogTitle>
+          </DialogHeader>
+          
+          {currentDetailNote && (
+            <div className="flex h-full space-x-4 overflow-hidden">
+              {/* Notes section */}
+              <div className="flex-1 border rounded-lg p-4 overflow-y-auto">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold">Notes</h3>
+                  {editingId !== currentDetailNote.id ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditStart(currentDetailNote.id, currentDetailNote.note)}
+                      className="h-8 px-2"
+                    >
+                      <Edit size={16} className="mr-1" />
+                      Edit
+                    </Button>
+                  ) : null}
+                </div>
+
+                <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <span className="flex items-center mr-3">
+                    <Calendar size={14} className="mr-1" />
+                    {currentDetailNote.date}
+                  </span>
+                  <span className="flex items-center">
+                    <Clock size={14} className="mr-1" />
+                    {currentDetailNote.time}
+                  </span>
+                </div>
+
+                {editingId === currentDetailNote.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editedNote}
+                      onChange={(e) => setEditedNote(e.target.value)}
+                      className="w-full border rounded-md p-3 min-h-32"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingId(null)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleEditSave(currentDetailNote.id)}
+                        className="bg-blue-600 text-white hover:bg-blue-700"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prose max-w-none">
+                    <p>{currentDetailNote.note}</p>
+                    
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-medium mb-2">Doctor Recommendations</h4>
+                      <ul className="list-disc pl-5 text-sm">
+                        <li>Continue current medication regimen</li>
+                        <li>Practice deep breathing exercises daily</li>
+                        <li>Follow up in 2 weeks</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-medium mb-2">Follow-up Tasks</h4>
+                      <ul className="list-disc pl-5 text-sm">
+                        <li>Schedule lab work</li>
+                        <li>Refill prescription</li>
+                        <li>Update medical history form</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Transcript section */}
+              <div className="flex-1 border rounded-lg p-4 overflow-y-auto">
+                <h3 className="text-lg font-semibold mb-3">Transcript</h3>
+                <pre className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap text-sm">
+                  {currentDetailNote.transcript}
+                </pre>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

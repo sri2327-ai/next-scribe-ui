@@ -1,9 +1,14 @@
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Filter, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import { Filter, ArrowDownAZ, ArrowUpAZ, Upload, File, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 interface PatientDocumentsProps {
   patient: {
@@ -63,14 +68,21 @@ const documents = [
 ];
 
 const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [documentsList, setDocumentsList] = useState(documents);
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
-  const filteredDocuments = documents
+  const filteredDocuments = documentsList
     .filter(doc => 
       doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -83,12 +95,92 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
         : dateB.getTime() - dateA.getTime();
     });
 
+  const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setSelectedFiles(filesArray);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + " B";
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    else return (bytes / 1048576).toFixed(1) + " MB";
+  };
+
+  const simulateUpload = () => {
+    if (selectedFiles.length === 0 || !selectedCategory) {
+      toast.error("Please select files and category before uploading");
+      return;
+    }
+    
+    setUploading(true);
+    setUploadProgress(0);
+    
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 100);
+    
+    // Simulate completion after some time
+    setTimeout(() => {
+      clearInterval(interval);
+      setUploading(false);
+      setUploadProgress(100);
+      
+      // Add the uploaded files to the documents list
+      const newDocs = selectedFiles.map((file, index) => {
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('en-US', {
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric'
+        });
+        
+        return {
+          id: Math.max(...documentsList.map(d => d.id)) + 1 + index,
+          name: file.name,
+          type: file.name.split('.').pop()?.toUpperCase() || 'Unknown',
+          date: formattedDate,
+          size: formatFileSize(file.size),
+          category: selectedCategory
+        };
+      });
+      
+      setDocumentsList(prev => [...newDocs, ...prev]);
+      setSelectedFiles([]);
+      setSelectedCategory("");
+      setUploadDialogOpen(false);
+      toast.success(`${newDocs.length} file(s) uploaded successfully`);
+    }, 2000);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Patient Documents</h3>
         <div className="flex gap-2">
-          <Button>Upload Document</Button>
+          <Button 
+            onClick={() => setUploadDialogOpen(true)} 
+            className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
+          >
+            <Upload size={16} />
+            Upload Document
+          </Button>
         </div>
       </div>
       
@@ -151,6 +243,104 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
           ))}
         </TableBody>
       </Table>
+
+      {/* Upload Dialog */}
+      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Documents</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="category">Document Category</Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Consent Forms">Consent Forms</SelectItem>
+                  <SelectItem value="Lab Results">Lab Results</SelectItem>
+                  <SelectItem value="Treatment Plans">Treatment Plans</SelectItem>
+                  <SelectItem value="Insurance">Insurance</SelectItem>
+                  <SelectItem value="Medications">Medications</SelectItem>
+                  <SelectItem value="Medical Records">Medical Records</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelection}
+                style={{ display: 'none' }}
+                multiple
+              />
+              
+              <div 
+                onClick={handleUploadClick}
+                className="border-2 border-dashed rounded-md p-6 hover:bg-gray-50 cursor-pointer flex flex-col items-center justify-center"
+              >
+                <Upload className="mb-2 text-gray-400" />
+                <p className="text-sm text-gray-500">Click to select files or drag and drop</p>
+                <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX, JPG, PNG</p>
+              </div>
+            </div>
+
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                <Label>Selected Files</Label>
+                <div className="border rounded-md overflow-y-auto max-h-36">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 hover:bg-gray-100">
+                      <div className="flex items-center space-x-2 overflow-hidden">
+                        <File size={16} className="text-gray-500" />
+                        <span className="text-sm truncate">{file.name}</span>
+                        <span className="text-xs text-gray-500">({formatFileSize(file.size)})</span>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => removeFile(index)}
+                      >
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {uploading && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Uploading...</Label>
+                  <span className="text-xs text-gray-500">{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} className="h-2" />
+              </div>
+            )}
+          </div>
+          <DialogFooter className="sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setUploadDialogOpen(false)}
+              disabled={uploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={simulateUpload}
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              disabled={uploading || selectedFiles.length === 0}
+            >
+              {uploading ? "Uploading..." : "Upload"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

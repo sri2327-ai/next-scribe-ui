@@ -1,9 +1,12 @@
 
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Phone, Mail, Calendar, UserCircle, Flag, Tag, DollarSign } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { cn } from "@/lib/utils";
+import { Badge } from "./ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
 
 interface AppointmentType {
   label: string;
@@ -93,7 +96,6 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
       </button>
       {collapsed ? (
         <div className="flex flex-col items-center pt-8">
-          {/* Avatar collapsed view */}
           <Avatar className="mb-2 h-10 w-10">
             <AvatarImage src={avatarSrc} />
             <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
@@ -102,192 +104,239 @@ const PatientDemographicsCard: React.FC<PatientDemographicsCardProps> = ({
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={avatarSrc} />
-              <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-lg text-gray-800 font-semibold">{patient.name}</span>
-              <span className="text-sm text-gray-500">{patient.age} • DOB {patient.dob}</span>
+          <div className="bg-white rounded-xl border shadow-sm p-4 mb-2">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-14 w-14">
+                <AvatarImage src={avatarSrc} />
+                <AvatarFallback>{getInitials(patient.name)}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-lg text-gray-800 font-semibold">{patient.name}</span>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Calendar size={14} className="mr-1" />
+                  <span>{patient.age} • DOB {patient.dob}</span>
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <UserCircle size={14} className="mr-1" />
+                  <span>{patient.pronouns || "No pronouns"} • {patient.gender}</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="text-xs text-blue-600 mt-1 cursor-pointer">Add pronouns • {patient.gender}</div>
-          <div className="py-1">
-            <span className="bg-blue-100 px-2 py-1 rounded-full text-xs text-blue-700">{patient.status}</span>
-          </div>
-          {patient.tags.length > 0 && (
-            <div className="mt-2 text-xs text-blue-700 underline cursor-pointer">{patient.tags.join(", ")}</div>
-          )}
-          <div className="mt-2 text-xs text-yellow-800">{"$"}{patient.copay} Copay</div>
-          <div className="mt-2 text-xs">Flags ({patient.flags})</div>
-          <div className="border-b my-2" />
-
-          <div>
-            <div className="font-semibold mb-1">Contact</div>
-            <div className="text-xs text-gray-600">Phone <span className="font-mono">{patient.phone}</span> (mobile)</div>
-            <div className="text-xs text-gray-600">Email <a href={`mailto:${patient.email}`} className="underline">{patient.email}</a></div>
-          </div>
-          <div className="border-b my-2" />
-          <div>
-            <div className="font-semibold mb-1">Appointments</div>
-            {patient.appointments.map((appt, idx) =>
-              <div key={idx} className="text-xs text-gray-700 flex flex-col mb-2">
-                <span className="font-semibold">{appt.label}</span>
-                <span>{appt.date} • {appt.time}</span>
-                <span className="text-[11px] text-gray-400">{appt.clinician} • {appt.location}</span>
+            
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100">
+                {patient.status}
+              </Badge>
+              {patient.tags.map((tag, i) => (
+                <Badge key={i} variant="outline" className="bg-gray-50">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div className="flex items-center text-sm border border-yellow-100 bg-yellow-50 rounded p-2">
+                <DollarSign size={14} className="mr-1 text-yellow-700" />
+                <span className="text-yellow-800">${patient.copay} Copay</span>
               </div>
-            )}
-            <span className="font-semibold">Last</span>
-            <span className="text-xs">{patient.lastAppointment || "--"}</span>
-          </div>
-          <div className="border-b my-2" />
-
-          {/* Demographics section, editable */}
-          <div>
-            <div className="font-semibold mb-1 mt-2">Demographics</div>
-
-            <div className="space-y-2">
-              <Label className="text-xs">Legal name</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={legalName.first}
-                  onChange={e => setLegalName({ ...legalName, first: e.target.value })}
-                  className="w-1/3"
-                  placeholder="First"
-                />
-                <Input
-                  value={legalName.middle}
-                  onChange={e => setLegalName({ ...legalName, middle: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Middle"
-                />
-                <Input
-                  value={legalName.last}
-                  onChange={e => setLegalName({ ...legalName, last: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Last"
-                />
-              </div>
-              <Label className="text-xs">Name to use</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={nameToUse.first}
-                  onChange={e => setNameToUse({ ...nameToUse, first: e.target.value })}
-                  className="w-1/3"
-                  placeholder="First"
-                />
-                <Input
-                  value={nameToUse.middle}
-                  onChange={e => setNameToUse({ ...nameToUse, middle: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Middle"
-                />
-                <Input
-                  value={nameToUse.last}
-                  onChange={e => setNameToUse({ ...nameToUse, last: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Last"
-                />
-              </div>
-              <Label className="text-xs">Former name</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={formerName.first}
-                  onChange={e => setFormerName({ ...formerName, first: e.target.value })}
-                  className="w-1/3"
-                  placeholder="First"
-                />
-                <Input
-                  value={formerName.middle}
-                  onChange={e => setFormerName({ ...formerName, middle: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Middle"
-                />
-                <Input
-                  value={formerName.last}
-                  onChange={e => setFormerName({ ...formerName, last: e.target.value })}
-                  className="w-1/3"
-                  placeholder="Last"
-                />
-              </div>
-              <Label className="text-xs">Background</Label>
-              <div className="flex flex-col gap-1">
-                <div className="flex gap-2">
-                  <Input
-                    value={background.dob}
-                    onChange={e => setBackground({ ...background, dob: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Date of birth"
-                  />
-                  <Input
-                    value={background.birthSex}
-                    onChange={e => setBackground({ ...background, birthSex: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Birth sex"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={background.legalSex}
-                    onChange={e => setBackground({ ...background, legalSex: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Legal sex"
-                  />
-                  <Input
-                    value={background.pronouns}
-                    onChange={e => setBackground({ ...background, pronouns: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Pronouns"
-                  />
-                </div>
-                <Input
-                  value={background.genderIdentity}
-                  onChange={e => setBackground({ ...background, genderIdentity: e.target.value })}
-                  className="w-full"
-                  placeholder="Gender identity"
-                />
-                <div className="flex gap-2">
-                  <Input
-                    value={background.race}
-                    onChange={e => setBackground({ ...background, race: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Race"
-                  />
-                  <Input
-                    value={background.raceSub}
-                    onChange={e => setBackground({ ...background, raceSub: e.target.value })}
-                    className="w-1/2"
-                    placeholder="Race subcategory"
-                  />
-                </div>
-                <Input
-                  value={background.ethnicity}
-                  onChange={e => setBackground({ ...background, ethnicity: e.target.value })}
-                  className="w-full"
-                  placeholder="Ethnicity"
-                />
-                <Input
-                  value={background.specificEthnicity}
-                  onChange={e => setBackground({ ...background, specificEthnicity: e.target.value })}
-                  className="w-full"
-                  placeholder="Specific ethnicity"
-                />
-                <Input
-                  value={background.ethnicityRequired}
-                  onChange={e => setBackground({ ...background, ethnicityRequired: e.target.value })}
-                  className="w-full"
-                  placeholder="Ethnicity required"
-                />
-                <Input
-                  value={background.notes}
-                  onChange={e => setBackground({ ...background, notes: e.target.value })}
-                  className="w-full"
-                  placeholder="Additional notes"
-                />
+              <div className="flex items-center text-sm border border-red-100 bg-red-50 rounded p-2">
+                <Flag size={14} className="mr-1 text-red-700" />
+                <span className="text-red-800">Flags ({patient.flags})</span>
               </div>
             </div>
           </div>
+
+          <Accordion type="multiple" defaultValue={["contact"]} className="w-full">
+            <AccordionItem value="contact" className="border-b">
+              <AccordionTrigger className="py-2 hover:no-underline">
+                <span className="font-semibold">Contact Info</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm">
+                    <Phone size={14} className="mr-2 text-gray-500" />
+                    <span className="font-mono">{patient.phone}</span>
+                    <Badge className="ml-2 text-[10px] h-4" variant="outline">Mobile</Badge>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <Mail size={14} className="mr-2 text-gray-500" />
+                    <a href={`mailto:${patient.email}`} className="underline text-blue-600">{patient.email}</a>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="appointments" className="border-b">
+              <AccordionTrigger className="py-2 hover:no-underline">
+                <span className="font-semibold">Appointments</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3">
+                  {patient.appointments.map((appt, idx) => (
+                    <div key={idx} className={cn(
+                      "p-3 rounded-md",
+                      appt.label === "Today" ? "bg-blue-50 border border-blue-100" : 
+                      appt.label === "Next" ? "bg-green-50 border border-green-100" : 
+                      "bg-gray-50 border border-gray-100"
+                    )}>
+                      <div className="flex justify-between items-start">
+                        <span className={cn(
+                          "font-medium text-sm",
+                          appt.label === "Today" ? "text-blue-700" : 
+                          appt.label === "Next" ? "text-green-700" : 
+                          "text-gray-700"
+                        )}>{appt.label}</span>
+                        <span className="text-xs bg-white px-2 py-0.5 rounded border">{appt.date}</span>
+                      </div>
+                      <div className="text-xs mt-1">{appt.time}</div>
+                      <div className="text-[11px] text-gray-500 mt-1">{appt.clinician} • {appt.location}</div>
+                    </div>
+                  ))}
+                  
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex items-center">
+                      <span className="text-xs font-medium mr-1">Last Visit:</span>
+                      <span className="text-xs">{patient.lastAppointment || "--"}</span>
+                    </div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="demographics" className="border-b">
+              <AccordionTrigger className="py-2 hover:no-underline">
+                <span className="font-semibold">Demographics</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs block mb-1">Legal name</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={legalName.first}
+                        onChange={e => setLegalName({ ...legalName, first: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="First"
+                      />
+                      <Input
+                        value={legalName.middle}
+                        onChange={e => setLegalName({ ...legalName, middle: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="Middle"
+                      />
+                      <Input
+                        value={legalName.last}
+                        onChange={e => setLegalName({ ...legalName, last: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="Last"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-xs block mb-1">Name to use</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={nameToUse.first}
+                        onChange={e => setNameToUse({ ...nameToUse, first: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="First"
+                      />
+                      <Input
+                        value={nameToUse.middle}
+                        onChange={e => setNameToUse({ ...nameToUse, middle: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="Middle"
+                      />
+                      <Input
+                        value={nameToUse.last}
+                        onChange={e => setNameToUse({ ...nameToUse, last: e.target.value })}
+                        className="w-1/3 h-7 text-xs"
+                        placeholder="Last"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs block mb-1">Date of birth</Label>
+                      <Input
+                        value={background.dob}
+                        onChange={e => setBackground({ ...background, dob: e.target.value })}
+                        className="w-full h-7 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs block mb-1">Birth sex</Label>
+                      <Input
+                        value={background.birthSex}
+                        onChange={e => setBackground({ ...background, birthSex: e.target.value })}
+                        className="w-full h-7 text-xs"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs block mb-1">Legal sex</Label>
+                      <Input
+                        value={background.legalSex}
+                        onChange={e => setBackground({ ...background, legalSex: e.target.value })}
+                        className="w-full h-7 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs block mb-1">Pronouns</Label>
+                      <Input
+                        value={background.pronouns}
+                        onChange={e => setBackground({ ...background, pronouns: e.target.value })}
+                        className="w-full h-7 text-xs"
+                        placeholder="Add pronouns"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-xs block mb-1">Gender identity</Label>
+                    <Input
+                      value={background.genderIdentity}
+                      onChange={e => setBackground({ ...background, genderIdentity: e.target.value })}
+                      className="w-full h-7 text-xs"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs block mb-1">Race</Label>
+                      <Input
+                        value={background.race}
+                        onChange={e => setBackground({ ...background, race: e.target.value })}
+                        className="w-full h-7 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs block mb-1">Race subcategory</Label>
+                      <Input
+                        value={background.raceSub}
+                        onChange={e => setBackground({ ...background, raceSub: e.target.value })}
+                        className="w-full h-7 text-xs"
+                        placeholder="Add subcategory"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-xs block mb-1">Ethnicity</Label>
+                    <Input
+                      value={background.ethnicity}
+                      onChange={e => setBackground({ ...background, ethnicity: e.target.value })}
+                      className="w-full h-7 text-xs"
+                    />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       )}
     </div>

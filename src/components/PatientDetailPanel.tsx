@@ -7,6 +7,7 @@ import PatientMessagesChat from "./PatientMessagesChat";
 import PatientTimeline from "./PatientTimeline";
 import PatientProfile from "./PatientProfile";
 import PatientDocuments from "./PatientDocuments";
+import PatientSettings from "./PatientSettings";
 
 interface AppointmentType {
   label: string;
@@ -40,7 +41,7 @@ interface PatientDetailPanelProps {
 const panelTabs = [
   "Notes / Transcript",
   "Timeline",
-  "Profile",
+  "Summary",
   "Documents",
   "Messages",
   "Settings"
@@ -70,10 +71,12 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
                 <PatientMessagesChat patient={patient} />
               ) : activeTab === "Timeline" ? (
                 <PatientTimeline patient={patient} />
-              ) : activeTab === "Profile" ? (
+              ) : activeTab === "Summary" ? (
                 <PatientProfile patient={patient} />
               ) : activeTab === "Documents" ? (
                 <PatientDocuments patient={patient} />
+              ) : activeTab === "Settings" ? (
+                <PatientSettings patient={patient} />
               ) : (
                 <div className="text-sm text-gray-500">Content: {activeTab}</div>
               )}
