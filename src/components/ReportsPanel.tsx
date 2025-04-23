@@ -1,19 +1,36 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Calendar } from "lucide-react";
+import { FileText, Calendar, ChartBar } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 type ReportType = 'appointments' | 'notes';
+
+const appointmentData = [
+  { name: 'Mon', count: 4 },
+  { name: 'Tue', count: 6 },
+  { name: 'Wed', count: 8 },
+  { name: 'Thu', count: 5 },
+  { name: 'Fri', count: 7 },
+];
+
+const notesData = [
+  { name: 'Progress Notes', count: 15 },
+  { name: 'Treatment Plans', count: 8 },
+  { name: 'Assessments', count: 12 },
+  { name: 'Follow-ups', count: 10 },
+];
 
 const ReportsPanel = () => {
   const [selectedReport, setSelectedReport] = useState<ReportType | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showGraph, setShowGraph] = useState(false);
 
   const handleGenerateReport = (type: ReportType) => {
     setSelectedReport(type);
     setIsDialogOpen(true);
+    setShowGraph(false);
   };
 
   return (
@@ -57,17 +74,40 @@ const ReportsPanel = () => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <ChartBar className="h-5 w-5" />
               {selectedReport === 'appointments' ? 'Appointment Report' : 'Clinical Notes Report'}
             </DialogTitle>
           </DialogHeader>
           
-          {selectedReport === 'appointments' ? (
-            <AppointmentReportContent />
+          {!showGraph ? (
+            selectedReport === 'appointments' ? (
+              <AppointmentReportContent onGenerate={() => setShowGraph(true)} />
+            ) : (
+              <NotesReportContent onGenerate={() => setShowGraph(true)} />
+            )
           ) : (
-            <NotesReportContent />
+            <div className="h-[400px] mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={selectedReport === 'appointments' ? appointmentData : notesData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar
+                    dataKey="count"
+                    fill={selectedReport === 'appointments' ? '#8884d8' : '#82ca9d'}
+                    name={selectedReport === 'appointments' ? 'Appointments' : 'Notes'}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -75,7 +115,7 @@ const ReportsPanel = () => {
   );
 };
 
-const AppointmentReportContent = () => {
+const AppointmentReportContent = ({ onGenerate }: { onGenerate: () => void }) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -115,12 +155,12 @@ const AppointmentReportContent = () => {
           </select>
         </div>
       </div>
-      <Button className="w-full">Generate Report</Button>
+      <Button onClick={onGenerate} className="w-full">Generate Report</Button>
     </div>
   );
 };
 
-const NotesReportContent = () => {
+const NotesReportContent = ({ onGenerate }: { onGenerate: () => void }) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -160,7 +200,7 @@ const NotesReportContent = () => {
           </select>
         </div>
       </div>
-      <Button className="w-full">Generate Report</Button>
+      <Button onClick={onGenerate} className="w-full">Generate Report</Button>
     </div>
   );
 };
