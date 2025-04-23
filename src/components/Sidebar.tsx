@@ -1,6 +1,16 @@
 
 import React, { useState } from "react";
-import { User, Settings, LogOut, ChevronLeft, ChevronRight, Calendar, ListChecks, Inbox } from "lucide-react";
+import { 
+  User, 
+  Settings, 
+  LogOut, 
+  ChevronLeft, 
+  ChevronRight, 
+  Calendar, 
+  ListChecks, 
+  Inbox,
+  BarChart 
+} from "lucide-react";
 import { AppView } from "../types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +22,6 @@ const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
   { icon: <ListChecks stroke="black" fill="none" />, label: "Tasks", view: "Tasks" },
   { icon: <Inbox stroke="black" fill="none" />, label: "Inbox", view: "Inbox" }
 ];
-
-import { Calendar, BarChart, DollarSign, Pill } from "lucide-react";
 
 interface SidebarProps {
   collapsed: boolean;

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
@@ -78,6 +79,8 @@ const MainApp = () => {
         <TaskPanel />
       ) : activeView === "Inbox" ? (
         <InboxPanel />
+      ) : activeView === "Reports" ? (
+        <ReportsPanel />
       ) : (
         <div className="flex-1 flex justify-center items-center">
           <div className="bg-white shadow mt-24 p-12 rounded-xl text-center">
