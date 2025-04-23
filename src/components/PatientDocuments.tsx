@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Upload, Trash2, File, FilePlus } from "lucide-react";
+import { FileText, Upload, Trash2, File, FilePlus, Scan } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
@@ -76,6 +75,15 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
     toast.success("Document deleted successfully");
   };
 
+  const handleScan = async () => {
+    try {
+      window.open('scanner:', '_self');
+      toast.success("Scanner opened successfully");
+    } catch (error) {
+      toast.error("Unable to access scanner. Please check your system settings.");
+    }
+  };
+
   const documentTypeOptions = [
     { value: 'medical-record', label: 'Medical Record' },
     { value: 'lab-result', label: 'Lab Result' },
@@ -90,13 +98,23 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Patient Documents</h2>
-        <Button 
-          onClick={() => setIsUploadDialogOpen(true)} 
-          className="flex items-center gap-2"
-        >
-          <FilePlus className="h-4 w-4" />
-          Upload Document
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleScan}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Scan className="h-4 w-4" />
+            Scan Document
+          </Button>
+          <Button 
+            onClick={() => setIsUploadDialogOpen(true)} 
+            className="flex items-center gap-2"
+          >
+            <FilePlus className="h-4 w-4" />
+            Upload Document
+          </Button>
+        </div>
       </div>
 
       {documents.length === 0 ? (

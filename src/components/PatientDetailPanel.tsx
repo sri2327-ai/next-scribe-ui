@@ -1,5 +1,6 @@
-
 import React, { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { Button } from "./ui/button";
 import PatientTabs from "./PatientTabs";
 import PatientDemographicsCard from "./PatientDemographicsCard";
 import PatientNotesTranscript from "./PatientNotesTranscript";
@@ -55,6 +56,10 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
   const [activeTab, setActiveTab] = useState<string>(panelTabs[0]);
   const [demographicsCollapsed, setDemographicsCollapsed] = useState(false);
 
+  const handleAskAI = () => {
+    toast.info("AI Assistant coming soon");
+  };
+
   return (
     <div className="flex h-full w-full">
       <div className="flex flex-1 h-full overflow-hidden">
@@ -63,7 +68,14 @@ const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClos
           collapsed={demographicsCollapsed}
           onToggle={() => setDemographicsCollapsed((c) => !c)}
         />
-        <div className="flex-1 flex flex-col overflow-hidden bg-white">
+        <div className="flex-1 flex flex-col overflow-hidden bg-white relative">
+          <Button
+            onClick={handleAskAI}
+            className="absolute bottom-6 right-6 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-shadow"
+            size="icon"
+          >
+            <MessageCircle className="h-6 w-6" />
+          </Button>
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="border-b">
               <PatientTabs tabs={panelTabs} activeTab={activeTab} setActiveTab={setActiveTab} />
