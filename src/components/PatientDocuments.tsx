@@ -2,13 +2,14 @@
 import React, { useState, useRef } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Filter, ArrowDownAZ, ArrowUpAZ, Upload, File, X } from "lucide-react";
+import { Filter, ArrowDownAZ, ArrowUpAZ, Upload, File, X, Scan } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PatientDocumentsProps {
   patient: {
@@ -71,10 +72,14 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [scanDialogOpen, setScanDialogOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [scanProgress, setScanProgress] = useState(0);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [uploadTab, setUploadTab] = useState<string>("file");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [documentsList, setDocumentsList] = useState(documents);
 
@@ -169,11 +174,68 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
     }, 2000);
   };
 
+  const simulateScan = () => {
+    if (!selectedCategory) {
+      toast.error("Please select a category before scanning");
+      return;
+    }
+    
+    setScanning(true);
+    setScanProgress(0);
+    
+    // Simulate scan progress
+    const interval = setInterval(() => {
+      setScanProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+    
+    // Simulate completion after some time
+    setTimeout(() => {
+      clearInterval(interval);
+      setScanning(false);
+      setScanProgress(100);
+      
+      // Add the scanned document to the documents list
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+      });
+      
+      const newDoc = {
+        id: Math.max(...documentsList.map(d => d.id)) + 1,
+        name: `Scanned Document - ${formattedDate}.pdf`,
+        type: "PDF",
+        date: formattedDate,
+        size: "1.8 MB",
+        category: selectedCategory
+      };
+      
+      setDocumentsList(prev => [newDoc, ...prev]);
+      setSelectedCategory("");
+      setScanDialogOpen(false);
+      toast.success("Document scanned successfully");
+    }, 2000);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold">Patient Documents</h3>
         <div className="flex gap-2">
+          <Button 
+            onClick={() => setScanDialogOpen(true)} 
+            className="flex items-center gap-1 bg-green-600 text-white hover:bg-green-700"
+          >
+            <Scan size={16} />
+            Scan Document
+          </Button>
           <Button 
             onClick={() => setUploadDialogOpen(true)} 
             className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
@@ -226,27 +288,46 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredDocuments.map(doc => (
-            <TableRow key={doc.id}>
-              <TableCell className="font-medium">{doc.name}</TableCell>
-              <TableCell>{doc.type}</TableCell>
-              <TableCell>{doc.category}</TableCell>
-              <TableCell>{doc.date}</TableCell>
-              <TableCell>{doc.size}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">View</Button>
-                  <Button variant="outline" size="sm">Download</Button>
-                </div>
+          {filteredDocuments.length > 0 ? (
+            filteredDocuments.map(doc => (
+              <TableRow key={doc.id}>
+                <TableCell className="font-medium">{doc.name}</TableCell>
+                <TableCell>{doc.type}</TableCell>
+                <TableCell>{doc.category}</TableCell>
+                <TableCell>{doc.date}</TableCell>
+                <TableCell>{doc.size}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">View</Button>
+                    <Button variant="outline" size="sm">Download</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-red-600 hover:text-red-700"
+                      onClick={() => {
+                        setDocumentsList(prev => prev.filter(d => d.id !== doc.id));
+                        toast.success("Document deleted");
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-4 text-gray-500">
+                No documents found
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
 
       {/* Upload Dialog */}
       <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
             <DialogTitle>Upload Documents</DialogTitle>
           </DialogHeader>
@@ -334,9 +415,75 @@ const PatientDocuments: React.FC<PatientDocumentsProps> = ({ patient }) => {
             <Button
               onClick={simulateUpload}
               className="bg-blue-600 text-white hover:bg-blue-700"
-              disabled={uploading || selectedFiles.length === 0}
+              disabled={uploading || selectedFiles.length === 0 || !selectedCategory}
             >
               {uploading ? "Uploading..." : "Upload"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Scan Dialog */}
+      <Dialog open={scanDialogOpen} onOpenChange={setScanDialogOpen}>
+        <DialogContent className="sm:max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle>Scan Document</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="scan-category">Document Category</Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Consent Forms">Consent Forms</SelectItem>
+                  <SelectItem value="Lab Results">Lab Results</SelectItem>
+                  <SelectItem value="Treatment Plans">Treatment Plans</SelectItem>
+                  <SelectItem value="Insurance">Insurance</SelectItem>
+                  <SelectItem value="Medications">Medications</SelectItem>
+                  <SelectItem value="Medical Records">Medical Records</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="border rounded-md p-6 bg-gray-50">
+              {!scanning ? (
+                <div className="flex flex-col items-center">
+                  <Scan size={64} className="text-gray-400 mb-4" />
+                  <p className="text-center text-gray-600">
+                    Place your document on the scanner and click the Scan button
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Scanning document...</span>
+                    <span>{scanProgress}%</span>
+                  </div>
+                  <Progress value={scanProgress} className="h-2" />
+                  <p className="text-sm text-center text-gray-500">
+                    Please don't move the document while scanning
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setScanDialogOpen(false)}
+              disabled={scanning}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={simulateScan}
+              className="bg-green-600 text-white hover:bg-green-700"
+              disabled={scanning || !selectedCategory}
+            >
+              {scanning ? "Scanning..." : "Start Scan"}
             </Button>
           </DialogFooter>
         </DialogContent>
