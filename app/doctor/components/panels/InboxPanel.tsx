@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -29,7 +30,6 @@ const InboxPanel = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [activeTab, setActiveTab] = useState("received");
   
-  // Mock data for form submissions
   const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>([
     {
       id: '1',
@@ -54,7 +54,6 @@ const InboxPanel = () => {
     }
   ]);
   
-  // Mock data for form templates
   const formTemplates: FormTemplate[] = [
     { id: '1', name: 'Patient Intake Form', type: 'intake' },
     { id: '2', name: 'Feedback Survey', type: 'feedback' },
@@ -71,11 +70,9 @@ const InboxPanel = () => {
   const handleCreateForm = (event: React.FormEvent) => {
     event.preventDefault();
     
-    // In a real app, this would save to the backend
     toast.success("Form created and sent to patient");
     setShowCreateForm(false);
     
-    // Reset form values
     setNewForm({
       formType: '',
       patient: ''
