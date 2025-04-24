@@ -33,7 +33,7 @@ const MainApp = () => {
       ...appointments,
       {
         ...newAppt,
-        id: Math.max(0, ...appointments.map(a => a.id)) + 1,
+        id: String(Math.max(0, ...appointments.map(a => parseInt(a.id))) + 1),
         date: newAppt.date,
         time: `${newAppt.startTime} - ${newAppt.endTime}`,
         color: newAppt.appointmentType === "Psychotherapy"

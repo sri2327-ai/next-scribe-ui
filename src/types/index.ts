@@ -1,6 +1,8 @@
 
 export type AppView = "Patients" | "Schedule" | "Tasks" | "Inbox" | "Reports" | "Settings";
 
+export type ViewMode = "day" | "week" | "month";
+
 export interface Appointment {
   id: string;
   date: string;
@@ -23,4 +25,17 @@ export interface Patient {
   insurance: string;
   clinician: string;
   status: string;
+}
+
+export interface PatientFormData {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
+  confirmEmail: string;
+  phone: string;
+  consent: boolean;
+  sendIntake: boolean;
+  invitePortal: boolean;
+  careTeam: string[];
 }
