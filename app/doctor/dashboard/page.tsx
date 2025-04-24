@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   return (
@@ -72,25 +73,5 @@ export default function Dashboard() {
         </Card>
       </div>
     </main>
-  );
-}
-
-function Button({ children, variant = "default", size = "default" }) {
-  const variantClasses = {
-    default: "bg-blue-600 text-white hover:bg-blue-700",
-    outline: "border border-gray-300 hover:bg-gray-50"
-  };
-  
-  const sizeClasses = {
-    default: "px-4 py-2",
-    sm: "px-3 py-1 text-sm"
-  };
-  
-  return (
-    <button 
-      className={`rounded-md transition-colors ${variantClasses[variant]} ${sizeClasses[size]}`}
-    >
-      {children}
-    </button>
   );
 }

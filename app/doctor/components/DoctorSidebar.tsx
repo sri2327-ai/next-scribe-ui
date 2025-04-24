@@ -21,6 +21,7 @@ import Link from "next/link";
 
 // Define the menu items with their icons, labels, views, and paths
 const menuItems: { icon: React.ReactNode; label: string; view: AppView; path: string }[] = [
+  { icon: <BarChart stroke="black" fill="none" />, label: "Dashboard", view: "Dashboard", path: "/doctor/dashboard" },
   { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients", path: "/doctor/patients" },
   { icon: <Calendar stroke="black" fill="none" />, label: "Schedule", view: "Schedule", path: "/doctor/schedule" },
   { icon: <ListChecks stroke="black" fill="none" />, label: "Tasks", view: "Tasks", path: "/doctor/tasks" },
@@ -111,9 +112,9 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
             onViewChange("Settings");
             router.push("/doctor/settings");
           }}
-          className={activeView === "Settings" ? "bg-blue-100" : ""}
+          className={activeTab === "Settings" ? "bg-blue-100" : ""}
         >
-          <Settings className={activeView === "Settings" ? "text-blue-600" : "text-gray-700"} />
+          <Settings className={activeTab === "Settings" ? "text-blue-600" : "text-gray-700"} />
           <span className="sr-only">Settings</span>
         </Button>
       </div>
@@ -124,8 +125,8 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
         style={{ display: "flex", alignItems: "center" }}
       >
         {collapsed
-          ? <ChevronRight stroke="black" />
-          : <ChevronLeft stroke="black" />}
+          ? <ChevronRight size={20} stroke="black" />
+          : <ChevronLeft size={20} stroke="black" />}
       </button>
     </aside>
   );
