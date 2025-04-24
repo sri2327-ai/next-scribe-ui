@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import AddPatientPopup from "./popups/AddPatientPopup";
 import { Search, Filter } from "lucide-react";
 import PatientDetailPanel from "./PatientDetailPanel";
-import Sidebar from "./Sidebar";
 
 const panelPatients = [
   {
