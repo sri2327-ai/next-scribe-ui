@@ -95,7 +95,7 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
               onViewChange("Settings");
               router.push("/doctor/settings");
             }}>
-              Profile Settings
+              <User className="mr-2" size={16} /> Profile Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut}>
