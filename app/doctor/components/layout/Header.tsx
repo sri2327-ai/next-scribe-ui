@@ -1,6 +1,7 @@
+"use client";
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { 
   ChevronRight,
@@ -18,19 +19,19 @@ const Header = () => {
         </div>
         
         <nav className="flex space-x-2">
-          <Link to="/">
+          <Link href="/">
             <Button variant="ghost" className="text-white hover:bg-white/20">
               <Home className="mr-2 h-4 w-4" />
               Home
             </Button>
           </Link>
-          <Link to="/about">
+          <Link href="/about">
             <Button variant="ghost" className="text-white hover:bg-white/20">
               <Info className="mr-2 h-4 w-4" />
               About
             </Button>
           </Link>
-          <Link to="/technology">
+          <Link href="/technology">
             <Button variant="ghost" className="text-white hover:bg-white/20">
               <Cpu className="mr-2 h-4 w-4" />
               Technology

@@ -1,7 +1,8 @@
+"use client";
 
 import React, { useState } from 'react';
 import { Plus, Trash2, Edit } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { toast } from "sonner";
 
 interface MedicalHistoryEntry {

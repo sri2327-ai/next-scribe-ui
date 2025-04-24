@@ -1,7 +1,8 @@
+"use client";
 
 import React, { useState } from 'react';
-import AddPatientPopup from './AddPatientPopup';
-import { mockPatientData } from '../data/mockData';
+import AddPatientPopup from '../popups/AddPatientPopup';
+import { mockPatientData } from '@/data/mockData';
 
 const PatientsView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);

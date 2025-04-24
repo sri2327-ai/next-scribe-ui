@@ -1,7 +1,8 @@
+"use client";
 
 import React, { useState } from "react";
 import { MessageCircle, Mail } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import PatientTabs from "./PatientTabs";
 import PatientDemographicsCard from "./PatientDemographicsCard";
 import PatientNotesTranscript from "./PatientNotesTranscript";
@@ -10,10 +11,10 @@ import PatientTimeline from "./PatientTimeline";
 import PatientProfile from "./PatientProfile";
 import PatientDocuments from "./PatientDocuments";
 import PatientSettings from "./PatientSettings";
-import MedicalHistory from "./MedicalHistory";
-import SocialHistory from "./SocialHistory";
+import MedicalHistory from "@/app/doctor/components/MedicalHistory";
+import SocialHistory from "@/app/doctor/components/SocialHistory";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface AppointmentType {
   label: string;

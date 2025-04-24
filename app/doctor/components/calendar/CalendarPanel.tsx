@@ -1,7 +1,8 @@
+"use client";
 
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
-import { getDaysInMonth } from "../utils/dateUtils";
+import { getDaysInMonth } from "@/utils/dateUtils";
 
 const years = Array.from({length: 16}, (_,i) => 2018 + i);
 const monthsLong = [

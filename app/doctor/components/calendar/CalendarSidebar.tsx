@@ -1,7 +1,8 @@
+"use client";
 
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, EyeOff, Calendar, Filter } from "lucide-react";
-import { getDaysInMonth } from "../utils/dateUtils";
+import { getDaysInMonth } from "@/utils/dateUtils";
 
 interface Props {
   currentDate: Date;

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { 
   User, 
@@ -10,10 +12,11 @@ import {
   Inbox,
   BarChart 
 } from "lucide-react";
-import { AppView } from "../types";
+import { AppView } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import Link from 'next/link';
 
 const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
   { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients" },

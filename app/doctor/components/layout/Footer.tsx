@@ -1,6 +1,7 @@
+"use client";
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -13,9 +14,9 @@ const Footer = () => {
           </div>
           
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
-            <Link to="/" className="hover:text-purple-400 transition-colors">Home</Link>
-            <Link to="/about" className="hover:text-purple-400 transition-colors">About</Link>
-            <Link to="/technology" className="hover:text-purple-400 transition-colors">Technology</Link>
+            <Link href="/" className="hover:text-purple-400 transition-colors">Home</Link>
+            <Link href="/about" className="hover:text-purple-400 transition-colors">About</Link>
+            <Link href="/technology" className="hover:text-purple-400 transition-colors">Technology</Link>
           </div>
         </div>
         
