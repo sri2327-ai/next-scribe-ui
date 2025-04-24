@@ -1,15 +1,36 @@
 
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Doctor Portal - S10.AI",
-  description: "Healthcare management for doctors",
-};
+import { useState } from "react";
+import { AppView } from "@/types";
+import DoctorSidebar from "./components/DoctorSidebar";
 
 export default function DoctorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
-}
+  const [activeView, setActiveView] = useState<AppView>("Patients");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const handleSignOut = () => {
+    document.cookie = 'doctorAuth=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    document.cookie = 'doctorEmail=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    window.location.href = '/doctor/signin';
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+      <DoctorSidebar 
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        activeView={activeView}
+        onViewChange={setActiveView}
+        onSignOut={handleSignOut}
+      />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {children}
+      </div>
+    </div>
+  );
+};
