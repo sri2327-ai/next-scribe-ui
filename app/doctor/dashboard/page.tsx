@@ -3,21 +3,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import DoctorSidebar from "@/app/doctor/components/DoctorSidebar";
 import { AppView } from "@/types";
 import { mockPatientData } from "@/data/mockData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DoctorDashboard() {
   const router = useRouter();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeView, setActiveView] = useState<AppView>("Patients");
-
-  const handleSignOut = () => {
-    document.cookie = 'doctorAuth=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    document.cookie = 'doctorEmail=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    router.push('/doctor/signin');
-  };
 
   const renderDashboardContent = () => {
     // Active patients count
@@ -96,20 +87,8 @@ export default function DoctorDashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <DoctorSidebar 
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        activeView={activeView}
-        onViewChange={setActiveView}
-        onSignOut={handleSignOut}
-      />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          {renderDashboardContent()}
-        </main>
-      </div>
-    </div>
+    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+      {renderDashboardContent()}
+    </main>
   );
 }

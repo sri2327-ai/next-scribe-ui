@@ -3,14 +3,14 @@
 
 import { useState } from "react";
 import { AppView } from "@/types";
-import DoctorSidebar from "./components/DoctorSidebar";
+import Sidebar from "./components/Sidebar";
 
 export default function DoctorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [activeView, setActiveView] = useState<AppView>("Patients");
+  const [activeView, setActiveView] = useState<AppView>("Schedule");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleSignOut = () => {
@@ -21,7 +21,7 @@ export default function DoctorLayout({
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <DoctorSidebar 
+      <Sidebar 
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         activeView={activeView}

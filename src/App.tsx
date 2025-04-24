@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-// Remove the Sidebar import and replace with correct component
+// Import the MenuSidebar component
+import MenuSidebar from "./components/MenuSidebar"; 
 import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
 import PatientsPanel from "./components/PatientsPanel";
@@ -48,7 +49,12 @@ const MainApp = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-blue-50 via-slate-100 to-purple-50">
-      {/* Removed the Sidebar component as we're migrating to Next.js */}
+      <MenuSidebar
+        isCollapsed={menuCollapsed}
+        onToggleCollapse={() => setMenuCollapsed((c) => !c)}
+        activeView={activeView}
+        onViewChange={setActiveView}
+      />
       {activeView === "Schedule" ? (
         <>
           <CalendarPanel
