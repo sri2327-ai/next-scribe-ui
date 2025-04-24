@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { setCookie } from "cookies-next";
 
 export default function PatientSignIn() {
   const [email, setEmail] = useState("");
@@ -17,8 +18,10 @@ export default function PatientSignIn() {
     e.preventDefault();
     
     if (email && password) {
-      localStorage.setItem("patientAuth", "true");
-      localStorage.setItem("patientEmail", email);
+      // In a real app, you'd validate credentials against your backend
+      // For now we're simulating authentication
+      setCookie('patientAuth', 'true');
+      setCookie('patientEmail', email);
       
       toast.success("Signed in successfully");
       router.push('/patient/dashboard');

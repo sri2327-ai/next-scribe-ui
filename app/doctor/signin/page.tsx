@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { setCookie } from "cookies-next";
 
 export default function DoctorSignIn() {
   const [email, setEmail] = useState("");
@@ -15,8 +16,18 @@ export default function DoctorSignIn() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just navigate to the main app on any login attempt
-    router.push('/doctor/dashboard');
+    
+    if (email && password) {
+      // In a real app, you'd validate credentials against your backend
+      // For now we're simulating authentication
+      setCookie('doctorAuth', 'true');
+      setCookie('doctorEmail', email);
+      
+      toast.success("Signed in successfully");
+      router.push('/doctor/dashboard');
+    } else {
+      toast.error("Please enter both email and password");
+    }
   };
 
   return (
