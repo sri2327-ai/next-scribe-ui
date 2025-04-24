@@ -1,10 +1,11 @@
+
 import React, { useMemo, useState } from "react";
 import { ViewMode, Appointment } from "../types";
 import DayView from "./views/DayView";
 import WeekView from "./views/WeekView";
 import MonthView from "./views/MonthView";
 import { ChevronLeft, ChevronRight, Plus, Calendar, Filter, CalendarDays, Printer, FileDown } from "lucide-react";
-import AppointmentRequestsDrawer from "./AppointmentRequestsDrawer";
+import AppointmentRequestsDrawer from "@/app/doctor/components/AppointmentRequestsDrawer";
 import { toast } from "sonner";
 
 function getTimezoneDisplay() {
