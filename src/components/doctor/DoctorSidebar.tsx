@@ -17,13 +17,14 @@ import { AppView } from "../../types";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
-const menuItems: { icon: React.ReactNode; label: string; view: AppView }[] = [
-  { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients" },
-  { icon: <Calendar stroke="black" fill="none" />, label: "Schedule", view: "Schedule" },
-  { icon: <ListChecks stroke="black" fill="none" />, label: "Tasks", view: "Tasks" },
-  { icon: <Inbox stroke="black" fill="none" />, label: "Inbox", view: "Inbox" },
-  { icon: <BarChart stroke="black" fill="none" />, label: "Reports", view: "Reports" }
+const menuItems: { icon: React.ReactNode; label: string; view: AppView; path: string }[] = [
+  { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients", path: "/doctor/patients" },
+  { icon: <Calendar stroke="black" fill="none" />, label: "Schedule", view: "Schedule", path: "/doctor/schedule" },
+  { icon: <ListChecks stroke="black" fill="none" />, label: "Tasks", view: "Tasks", path: "/doctor/tasks" },
+  { icon: <Inbox stroke="black" fill="none" />, label: "Inbox", view: "Inbox", path: "/doctor/inbox" },
+  { icon: <BarChart stroke="black" fill="none" />, label: "Reports", view: "Reports", path: "/doctor/reports" }
 ];
 
 interface SidebarProps {
@@ -63,20 +64,21 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
       )}
       <nav className="mt-7 flex-1 flex flex-col space-y-1 items-center">
         {menuItems.map(item => (
-          <button
+          <Link 
             key={item.label}
-            onClick={() => onViewChange(item.view)}
+            href={item.path}
             className={`w-full flex items-center transition cursor-pointer px-3 py-2 rounded-lg mb-1
               hover:bg-blue-50
               ${collapsed ? "justify-center" : ""}
               ${activeView === item.view ? "bg-blue-100 text-blue-600 font-semibold" : "text-slate-800"}
             `}
+            onClick={() => onViewChange(item.view)}
           >
             <span>{item.icon}</span>
             {!collapsed &&
               <span className="ml-4 text-base">{item.label}</span>
             }
-          </button>
+          </Link>
         ))}
       </nav>
       <div className={`mt-auto flex flex-col items-end gap-0.5 ${collapsed ? "mb-2 pr-1" : "mb-6 px-3"}`}>
@@ -91,8 +93,9 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
             <DropdownMenuItem onSelect={() => {
               setProfileMenuOpen(false);
               onViewChange("Settings");
+              router.push("/doctor/settings");
             }}>
-              Profile Settings
+              <User className="mr-2" size={16} /> Profile Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut}>
@@ -103,7 +106,10 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => onViewChange("Settings")}
+          onClick={() => {
+            onViewChange("Settings");
+            router.push("/doctor/settings");
+          }}
           className={activeView === "Settings" ? "bg-blue-100" : ""}
         >
           <Settings className={activeView === "Settings" ? "text-blue-600" : "text-gray-700"} />
