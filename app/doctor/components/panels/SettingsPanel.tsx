@@ -98,4 +98,4 @@ const SettingsPanel = () => {
   );
 };
 
-export default PatientsPanel;
+export default SettingsPanel;
