@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 
+// Define the menu items with their icons, labels, views, and paths
 const menuItems: { icon: React.ReactNode; label: string; view: AppView; path: string }[] = [
   { icon: <User stroke="black" fill="none" />, label: "Patients", view: "Patients", path: "/doctor/patients" },
   { icon: <Calendar stroke="black" fill="none" />, label: "Schedule", view: "Schedule", path: "/doctor/schedule" },
