@@ -5,7 +5,7 @@ import DayView from "./views/DayView";
 import WeekView from "./views/WeekView";
 import MonthView from "./views/MonthView";
 import { ChevronLeft, ChevronRight, Plus, Calendar, Filter, CalendarDays, Printer, FileDown } from "lucide-react";
-import AppointmentRequestsDrawer from "@/app/doctor/components/AppointmentRequestsDrawer";
+import AppointmentRequestsDrawer from "./AppointmentRequestsDrawer";
 import { toast } from "sonner";
 
 function getTimezoneDisplay() {

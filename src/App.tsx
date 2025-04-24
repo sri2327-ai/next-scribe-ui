@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Sidebar from "@/app/doctor/components/layout/Sidebar";
-import CalendarPanel from "@/app/doctor/components/calendar/CalendarPanel";
+import Sidebar from "./components/Sidebar";
+import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
 import PatientsPanel from "./components/PatientsPanel";
-import EventPopup from "@/app/doctor/components/popups/EventPopup";
+import EventPopup from "./components/popups/EventPopup";
 import { Appointment, AppView, ViewMode } from "./types";
 import { mockAppointments, patients } from "./data/mockData";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import "./index.css";
-import ReportsPanel from "@/app/doctor/components/panels/ReportsPanel";
+import ReportsPanel from "./components/ReportsPanel";
 import PatientPortal from "./pages/PatientPortal";
-import TaskPanel from "@/app/doctor/components/panels/TaskPanel";
-import InboxPanel from "@/app/doctor/components/panels/InboxPanel";
-import SettingsPanel from "@/app/doctor/components/panels/SettingsPanel";
+import TaskPanel from "./components/TaskPanel";
+import InboxPanel from "./components/InboxPanel";
+import SettingsPanel from "./components/SettingsPanel";
 
 const MainApp = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
