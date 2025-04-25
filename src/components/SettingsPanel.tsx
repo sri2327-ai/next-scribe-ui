@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -19,6 +18,7 @@ import FormsSettings from './settings/FormsSettings';
 import EmailTemplateSettings from './settings/EmailTemplateSettings';
 import NotificationSettings from './settings/NotificationSettings';
 import PasswordSettings from './settings/PasswordSettings';
+import ThemeSettings from './settings/ThemeSettings';
 
 const SettingsPanel = () => {
   const [activeTab, setActiveTab] = useState("account");
@@ -132,6 +132,21 @@ const SettingsPanel = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
+              <AccordionItem value="appearance">
+                <AccordionTrigger className="px-4 py-3">Appearance</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col space-y-1 px-4">
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start font-normal" 
+                      onClick={() => setActiveTab("theme")}
+                    >
+                      Theme settings
+                    </Button>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </div>
         </div>
@@ -149,6 +164,7 @@ const SettingsPanel = () => {
           {activeTab === "forms" && <FormsSettings />}
           {activeTab === "email" && <EmailTemplateSettings />}
           {activeTab === "notifications" && <NotificationSettings />}
+          {activeTab === "theme" && <ThemeSettings />}
         </div>
       </div>
     </div>

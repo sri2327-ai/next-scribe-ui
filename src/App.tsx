@@ -1,6 +1,6 @@
-
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./providers/ThemeProvider";
 import Sidebar from "./components/Sidebar";
 import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
@@ -103,14 +103,16 @@ const MainApp = () => {
 
 const App: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/patient/*" element={<PatientPortal />} />
-      <Route path="/" element={<MainApp />} />
-      <Route path="*" element={<Navigate to="/signin" replace />} />
-    </Routes>
+    <ThemeProvider>
+      <Routes>
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/patient/*" element={<PatientPortal />} />
+        <Route path="/" element={<MainApp />} />
+        <Route path="*" element={<Navigate to="/signin" replace />} />
+      </Routes>
+    </ThemeProvider>
   );
 };
 
