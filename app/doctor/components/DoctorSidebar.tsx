@@ -112,9 +112,9 @@ const DoctorSidebar: React.FC<SidebarProps> = ({
             onViewChange("Settings");
             router.push("/doctor/settings");
           }}
-          className={activeTab === "Settings" ? "bg-blue-100" : ""}
+          className={activeView === "Settings" ? "bg-blue-100" : ""}
         >
-          <Settings className={activeTab === "Settings" ? "text-blue-600" : "text-gray-700"} />
+          <Settings className={activeView === "Settings" ? "text-blue-600" : "text-gray-700"} />
           <span className="sr-only">Settings</span>
         </Button>
       </div>
