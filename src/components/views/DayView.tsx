@@ -2,6 +2,7 @@
 import React from "react";
 import { Appointment } from "../../types";
 import { formatDate } from "../../utils/dateUtils";
+import { Calendar } from "lucide-react"; // Add this import for the Calendar icon
 
 const DayView: React.FC<{ currentDate: Date; appointments: Appointment[] }> = ({
   currentDate,
