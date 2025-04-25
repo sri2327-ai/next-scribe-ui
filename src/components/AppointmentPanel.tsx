@@ -130,19 +130,19 @@ const AppointmentPanel: React.FC<Props> = ({
   };
 
   return (
-    <main className="flex-1 flex flex-col overflow-hidden">
-      <div className="p-4 border-b bg-white/80">
+    <main className="flex-1 flex flex-col overflow-hidden bg-gray-50">
+      <div className="p-4 border-b bg-white shadow-sm">
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 items-center">
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={onCreateAppointment}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-semibold"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
-              <Plus className="w-5 h-5" /> Add Appointment
+              <Plus className="w-5 h-5" /> New Appointment
             </button>
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               title="Print Schedule"
             >
               <Printer className="w-5 h-5" />
@@ -150,7 +150,7 @@ const AppointmentPanel: React.FC<Props> = ({
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               title="Export Appointments"
             >
               <FileDown className="w-5 h-5" />
@@ -159,51 +159,44 @@ const AppointmentPanel: React.FC<Props> = ({
             <select
               value={selectedPatient}
               onChange={e => setSelectedPatient(e.target.value)}
-              className="p-2 border rounded text-sm hover:border-blue-600 min-w-[140px]"
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm hover:border-blue-400 transition-colors min-w-[140px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Patients</option>
               {patients.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
-            <label className="flex items-center gap-1 ml-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={showWeekends}
-                onChange={onToggleWeekends}
-                className="rounded border-gray-300"
-              />
-              Show Weekends
-            </label>
           </div>
-          <div className="flex items-center gap-1 ml-auto">
+          <div className="flex items-center gap-2">
             <button
               onClick={goToToday}
-              className="px-3 py-1 border rounded text-blue-600 border-blue-300 bg-white hover:bg-blue-100 text-sm mr-1"
+              className="px-3 py-1.5 text-sm border rounded-lg text-blue-600 border-blue-300 bg-white hover:bg-blue-50 transition-colors"
             >
               Today
             </button>
-            <button
-              onClick={() => handleNav("back")}
-              className="px-2 py-1 rounded-full hover:bg-blue-100"
-              aria-label="Back"
-            >
-              <ChevronLeft stroke="black" />
-            </button>
-            <button
-              onClick={() => handleNav("forward")}
-              className="px-2 py-1 rounded-full hover:bg-blue-100"
-              aria-label="Forward"
-            >
-              <ChevronRight stroke="black" />
-            </button>
-            <div className="flex space-x-1 ml-2">
+            <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1">
+              <button
+                onClick={() => handleNav("back")}
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleNav("forward")}
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex space-x-1">
               {(["day", "week", "month"] as ViewMode[]).map(mode => (
                 <button
                   key={mode}
                   onClick={() => onViewModeChange(mode)}
-                  className={`px-3 py-1 rounded text-sm capitalize
+                  className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors
                     ${viewMode === mode
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 hover:bg-blue-100"}`}
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-white border border-gray-200 hover:bg-gray-50"}`}
                   aria-current={viewMode === mode ? "page" : undefined}
                 >
                   {mode}
@@ -212,33 +205,26 @@ const AppointmentPanel: React.FC<Props> = ({
             </div>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-y-2">
-          <span className="flex items-center gap-2">
-            <span
-              className="text-3xl sm:text-4xl font-light leading-tight text-gray-900"
-              style={{ letterSpacing: "0.01em" }}
-            >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-y-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-light text-gray-900">
               {panelTitle}
-              <span className="ml-3 text-base font-normal text-gray-500 whitespace-nowrap">
-                ({timeZone})
-              </span>
-            </span>
+            </h1>
+            <span className="text-sm text-gray-500">({timeZone})</span>
             <button
               title="View Appointment Requests"
-              className="ml-4 p-2 bg-blue-100 rounded-full hover:bg-blue-200 transition"
+              className="p-2 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
               onClick={() => setShowRequests(true)}
             >
-              <CalendarDays className="w-6 h-6 text-blue-700" />
+              <CalendarDays className="w-5 h-5 text-blue-700" />
             </button>
-          </span>
+          </div>
         </div>
       </div>
+      
       <AppointmentRequestsDrawer open={showRequests} onClose={() => setShowRequests(false)} />
-      <div
-        className="p-4 overflow-y-auto flex-1"
-        onClick={handlePanelBgClick}
-        style={{ cursor: "pointer" }}
-      >
+      
+      <div className="p-4 overflow-y-auto flex-1 bg-gray-50" onClick={handlePanelBgClick}>
         {viewMode === "day" && (
           <DayView currentDate={currentDate} appointments={filteredAppointments} />
         )}

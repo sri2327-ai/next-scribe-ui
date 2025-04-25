@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { getDaysInMonth } from "../utils/dateUtils";
@@ -25,7 +24,6 @@ const CalendarPanel: React.FC<CalendarPanelProps> = ({
   const daysInMonth = getDaysInMonth(selectYear, selectMonth + 1);
   const firstDay = new Date(selectYear, selectMonth, 1).getDay();
 
-  // Month/year change handlers
   function handleMonthChange(monthIdx: number) {
     setSelectMonth(monthIdx);
     const newDate = new Date(selectYear, monthIdx, 1);
@@ -41,7 +39,6 @@ const CalendarPanel: React.FC<CalendarPanelProps> = ({
     setSelectYear(currentDate.getFullYear());
   }, [currentDate]);
 
-  // Calendar grid
   const calendarCells = [];
   for (let i = 0; i < firstDay; ++i) {
     calendarCells.push(<div key={`empty-${i}`} />);
@@ -64,77 +61,86 @@ const CalendarPanel: React.FC<CalendarPanelProps> = ({
 
   return (
     <aside className={`bg-white h-full flex flex-col border-r transition-all duration-300
-      ${collapsed ? "w-12" : "w-72"} z-10 relative`}
+      ${collapsed ? "w-12" : "w-72"} z-10 relative shadow-lg`}
       style={{ minWidth: collapsed ? "3rem" : "18rem" }}>
       {!collapsed &&
         <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Tabs */}
           <div className="flex flex-row border-b pl-2 pt-2 gap-2 mb-2">
             <button
-              className={`px-2 py-1 text-xs rounded ${activeTab === "calendar" ? "bg-blue-100 text-blue-700 font-medium" : "hover:bg-blue-50"}`}
+              className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                activeTab === "calendar" 
+                  ? "bg-blue-100 text-blue-700 font-medium shadow-sm" 
+                  : "hover:bg-blue-50"
+              }`}
               onClick={() => setActiveTab("calendar")}
-            >Calendar</button>
+            >
+              Calendar
+            </button>
             <button
-              className={`px-2 py-1 text-xs rounded ${activeTab === "filters" ? "bg-blue-100 text-blue-700 font-medium" : "hover:bg-blue-50"}`}
+              className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                activeTab === "filters" 
+                  ? "bg-blue-100 text-blue-700 font-medium shadow-sm" 
+                  : "hover:bg-blue-50"
+              }`}
               onClick={() => setActiveTab("filters")}
-            >Filters</button>
+            >
+              Filters
+            </button>
           </div>
           <div className="flex-1 min-h-0 overflow-auto">
             {activeTab === "calendar" ? (
               <div className="p-4 pb-2 border-b">
-                <div className="flex flex-row items-center justify-between mb-2">
+                <div className="flex flex-row items-center justify-between mb-4">
                   <button
-                    className="p-1.5 rounded hover:bg-blue-100"
+                    className="p-2 rounded-lg hover:bg-blue-100 transition-colors"
                     onClick={() => {
                       const prev = new Date(currentDate);
                       prev.setMonth(prev.getMonth() - 1);
                       onDateChange(prev);
                     }}
-                    aria-label="Previous month"
                   >
-                    <ChevronLeft stroke="black" />
+                    <ChevronLeft className="w-5 h-5 text-blue-700" />
                   </button>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <div className="relative">
                       <select
                         value={selectMonth}
                         onChange={e => handleMonthChange(Number(e.target.value))}
-                        className="appearance-none font-semibold px-2 pr-5 py-1 rounded border border-gray-200 bg-white mr-1"
+                        className="appearance-none font-medium px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:border-blue-400 transition-colors cursor-pointer pr-8"
                       >
                         {monthsLong.map((m, i) => (
                           <option value={i} key={m}>{m}</option>
                         ))}
                       </select>
-                      <ChevronDown className="pointer-events-none absolute top-2 right-2 w-4 h-4 text-gray-400" />
+                      <ChevronDown className="pointer-events-none absolute top-2.5 right-2 w-4 h-4 text-gray-400" />
                     </div>
                     <div className="relative">
                       <select
                         value={selectYear}
                         onChange={e => handleYearChange(Number(e.target.value))}
-                        className="appearance-none font-semibold px-2 pr-5 py-1 rounded border border-gray-200 bg-white"
+                        className="appearance-none font-medium px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:border-blue-400 transition-colors cursor-pointer pr-8"
                       >
                         {years.map(y => (
                           <option value={y} key={y}>{y}</option>
                         ))}
                       </select>
-                      <ChevronDown className="pointer-events-none absolute top-2 right-2 w-4 h-4 text-gray-400"/>
+                      <ChevronDown className="pointer-events-none absolute top-2.5 right-2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                   <button
-                    className="p-1.5 rounded hover:bg-blue-100"
+                    className="p-2 rounded-lg hover:bg-blue-100 transition-colors"
                     onClick={() => {
                       const next = new Date(currentDate);
                       next.setMonth(next.getMonth() + 1);
                       onDateChange(next);
                     }}
-                    aria-label="Next month"
                   >
-                    <ChevronRight stroke="black" />
+                    <ChevronRight className="w-5 h-5 text-blue-700" />
                   </button>
                 </div>
-                <div className="grid grid-cols-7 text-center font-bold text-xs text-gray-500 mb-1">
+                <div className="grid grid-cols-7 text-center font-semibold text-sm text-gray-600 mb-2">
                   {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                    <div key={i} className="py-1">{d}</div>
+                    <div key={i} className="py-2">{d}</div>
                   ))}
                 </div>
                 <div className="grid grid-cols-7 gap-1">
@@ -142,8 +148,7 @@ const CalendarPanel: React.FC<CalendarPanelProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="p-4 pt-0 space-y-6">
-                {/* Filters just below calendar in scrollable panel (move FilterSection here) */}
+              <div className="p-4 space-y-6">
                 <FilterSection
                   title="Rooms"
                   options={["Room 1", "Room 2", "Virtual Room"]}
@@ -161,19 +166,17 @@ const CalendarPanel: React.FC<CalendarPanelProps> = ({
           </div>
         </div>
       }
-      {/* Collapse Button at bottom */}
       <button
         aria-label="Collapse calendar"
-        className="mt-auto mb-3 mx-auto border border-gray-300 rounded-full p-2 hover:bg-gray-200"
+        className="mt-auto mb-3 mx-auto border border-gray-300 rounded-full p-2 hover:bg-blue-100 transition-colors"
         onClick={onToggleCollapse}
       >
-        {collapsed ? <ChevronRight stroke="black" /> : <ChevronLeft stroke="black" />}
+        {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
       </button>
     </aside>
   );
 };
 
-// Enhanced FilterSection with Select All/Unselect All
 const FilterSection: React.FC<{ title: string; options: string[] }> = ({ title, options }) => {
   const [checked, setChecked] = React.useState<boolean[]>(Array(options.length).fill(false));
   const allChecked = checked.every(Boolean);
@@ -182,39 +185,52 @@ const FilterSection: React.FC<{ title: string; options: string[] }> = ({ title, 
   function setAll(val: boolean) {
     setChecked(Array(options.length).fill(val));
   }
-  function handleOpt(idx: number) {
-    setChecked(checked => checked.map((v, i) => i === idx ? !v : v));
-  }
-
+  
   return (
-    <div>
-      <h4 className="font-semibold text-xs text-gray-700 mb-2">{title}</h4>
-      <div className="flex items-center gap-2 mb-1">
-        <button
-          onClick={() => setAll(true)}
-          className="px-2 py-0.5 rounded bg-blue-100 text-xs text-blue-700 hover:bg-blue-200"
-          disabled={allChecked}
-        >
-          Select All
-        </button>
-        <button
-          onClick={() => setAll(false)}
-          className="px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-700 hover:bg-gray-200"
-          disabled={!someChecked}
-        >
-          Unselect All
-        </button>
-      </div>
+    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+      <h4 className="font-semibold text-sm text-gray-700 mb-3 flex items-center justify-between">
+        <span>{title}</span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setAll(true)}
+            className={`px-2 py-1 text-xs rounded-md transition-colors ${
+              allChecked 
+                ? "bg-gray-100 text-gray-500" 
+                : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+            }`}
+            disabled={allChecked}
+          >
+            Select All
+          </button>
+          <button
+            onClick={() => setAll(false)}
+            className={`px-2 py-1 text-xs rounded-md transition-colors ${
+              !someChecked 
+                ? "bg-gray-100 text-gray-500" 
+                : "bg-red-100 text-red-700 hover:bg-red-200"
+            }`}
+            disabled={!someChecked}
+          >
+            Clear All
+          </button>
+        </div>
+      </h4>
       <div className="space-y-2">
         {options.map((opt, i) => (
-          <label key={opt} className="flex items-center">
+          <label key={opt} className="flex items-center group">
             <input
               type="checkbox"
               checked={checked[i]}
-              onChange={() => handleOpt(i)}
-              className="mr-2"
+              onChange={() => {
+                const newChecked = [...checked];
+                newChecked[i] = !newChecked[i];
+                setChecked(newChecked);
+              }}
+              className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out border-2 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span className="text-xs hover:text-blue-600">{opt}</span>
+            <span className="ml-2 text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
+              {opt}
+            </span>
           </label>
         ))}
       </div>
