@@ -1,12 +1,11 @@
 
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-// Import the MenuSidebar component
-import MenuSidebar from "./components/MenuSidebar"; 
+import Sidebar from "./components/Sidebar";
 import CalendarPanel from "./components/CalendarPanel";
 import AppointmentPanel from "./components/AppointmentPanel";
 import PatientsPanel from "./components/PatientsPanel";
-import EventPopup from "./components/popups/EventPopup";
+import EventPopup from "./components/EventPopup";
 import { Appointment, AppView, ViewMode } from "./types";
 import { mockAppointments, patients } from "./data/mockData";
 import SignIn from "./pages/SignIn";
@@ -34,7 +33,7 @@ const MainApp = () => {
       ...appointments,
       {
         ...newAppt,
-        id: String(Math.max(0, ...appointments.map(a => parseInt(a.id))) + 1),
+        id: Math.max(0, ...appointments.map(a => a.id)) + 1,
         date: newAppt.date,
         time: `${newAppt.startTime} - ${newAppt.endTime}`,
         color: newAppt.appointmentType === "Psychotherapy"
@@ -49,8 +48,8 @@ const MainApp = () => {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-blue-50 via-slate-100 to-purple-50">
-      <MenuSidebar
-        isCollapsed={menuCollapsed}
+      <Sidebar
+        collapsed={menuCollapsed}
         onToggleCollapse={() => setMenuCollapsed((c) => !c)}
         activeView={activeView}
         onViewChange={setActiveView}

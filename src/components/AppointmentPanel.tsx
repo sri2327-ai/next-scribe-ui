@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { ViewMode, Appointment } from "../types";
 import DayView from "./views/DayView";

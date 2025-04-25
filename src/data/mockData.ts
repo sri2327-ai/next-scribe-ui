@@ -3,7 +3,7 @@ import { Appointment } from "../types";
 
 export const mockAppointments: Appointment[] = [
   {
-    id: "1",
+    id: 1,
     date: "2025-04-22",
     time: "9:00 AM - 9:30 AM",
     type: "Psychotherapy",
@@ -13,7 +13,7 @@ export const mockAppointments: Appointment[] = [
     color: "purple-500"
   },
   {
-    id: "2",
+    id: 2,
     date: "2025-04-22",
     time: "12:00 PM - 12:00 PM",
     type: "Blocked",
@@ -21,7 +21,7 @@ export const mockAppointments: Appointment[] = [
     color: "gray-500"
   },
   {
-    id: "3",
+    id: 3,
     date: "2025-04-22",
     time: "12:30 PM - 1:30 PM",
     type: "Reservation",
@@ -29,7 +29,7 @@ export const mockAppointments: Appointment[] = [
     color: "green-500"
   },
   {
-    id: "4",
+    id: 4,
     date: "2025-04-23",
     time: "1:00 PM - 1:30 PM",
     type: "Medication Management",

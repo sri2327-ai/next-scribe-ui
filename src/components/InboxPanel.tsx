@@ -1,234 +1,252 @@
 
-import React from 'react';
-import { Search, Star, StarOff, Inbox, File, Send, Archive, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
-interface Message {
+interface FormSubmission {
   id: string;
-  sender: string;
-  subject: string;
-  content: string;
-  date: string;
-  read: boolean;
-  starred: boolean;
+  patientName: string;
+  formType: string;
+  submittedDate: string;
+  status: 'completed' | 'pending' | 'new';
 }
 
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    sender: 'Dr. Sarah Johnson',
-    subject: 'Patient Referral - John Doe',
-    content: 'I wanted to refer a patient with anxiety disorder who might benefit from your expertise...',
-    date: '2025-04-24',
-    read: false,
-    starred: true
-  },
-  {
-    id: '2',
-    sender: 'Admin Staff',
-    subject: 'Updated Office Hours',
-    content: 'Please note that the office hours will change starting next month...',
-    date: '2025-04-23',
-    read: true,
-    starred: false
-  },
-  {
-    id: '3',
-    sender: 'Lab Results',
-    subject: 'Test Results Available - Sarah Williams',
-    content: 'The test results for patient Sarah Williams are now available for review...',
-    date: '2025-04-22',
-    read: false,
-    starred: false
-  }
-];
+interface FormTemplate {
+  id: string;
+  name: string;
+  type: string;
+}
 
-const InboxPanel: React.FC = () => {
-  const [messages, setMessages] = React.useState<Message[]>(mockMessages);
-  const [selectedMessage, setSelectedMessage] = React.useState<Message | null>(null);
-  const [activeFolder, setActiveFolder] = React.useState('inbox');
-
-  const toggleStar = (id: string) => {
-    setMessages(messages.map(msg => 
-      msg.id === id ? { ...msg, starred: !msg.starred } : msg
-    ));
-  };
-
-  const markAsRead = (id: string) => {
-    setMessages(messages.map(msg => 
-      msg.id === id ? { ...msg, read: true } : msg
-    ));
-  };
-
-  const selectMessage = (message: Message) => {
-    setSelectedMessage(message);
-    if (!message.read) {
-      markAsRead(message.id);
+const InboxPanel = () => {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("received");
+  
+  // Mock data for form submissions
+  const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>([
+    {
+      id: '1',
+      patientName: 'John Doe',
+      formType: 'Patient Intake Form',
+      submittedDate: '2025-04-20',
+      status: 'new'
+    },
+    {
+      id: '2',
+      patientName: 'Jane Smith',
+      formType: 'Feedback Survey',
+      submittedDate: '2025-04-19',
+      status: 'completed'
+    },
+    {
+      id: '3',
+      patientName: 'Mike Johnson',
+      formType: 'Medical History',
+      submittedDate: '2025-04-18',
+      status: 'pending'
     }
+  ]);
+  
+  // Mock data for form templates
+  const formTemplates: FormTemplate[] = [
+    { id: '1', name: 'Patient Intake Form', type: 'intake' },
+    { id: '2', name: 'Feedback Survey', type: 'feedback' },
+    { id: '3', name: 'Medical History', type: 'medical' },
+    { id: '4', name: 'Insurance Information', type: 'insurance' },
+    { id: '5', name: 'Consent Form', type: 'consent' }
+  ];
+  
+  const [newForm, setNewForm] = useState({
+    formType: '',
+    patient: ''
+  });
+
+  const handleCreateForm = (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    // In a real app, this would save to the backend
+    toast.success("Form created and sent to patient");
+    setShowCreateForm(false);
+    
+    // Reset form values
+    setNewForm({
+      formType: '',
+      patient: ''
+    });
+  };
+  
+  const updateFormStatus = (formId: string, status: 'completed' | 'pending' | 'new') => {
+    const updatedForms = formSubmissions.map(form => 
+      form.id === formId ? { ...form, status } : form
+    );
+    setFormSubmissions(updatedForms);
+    toast.success(`Form marked as ${status}`);
   };
 
   return (
-    <div className="flex h-full bg-white">
-      {/* Sidebar */}
-      <div className="w-60 border-r flex flex-col">
-        <div className="p-3 border-b">
-          <button className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Compose
-          </button>
-        </div>
-        
-        <div className="flex-1 overflow-auto">
-          <div className="p-2">
-            <button 
-              onClick={() => setActiveFolder('inbox')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'inbox' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <Inbox className="w-4 h-4 mr-2" />
-              Inbox
-              <span className="ml-auto bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full">2</span>
-            </button>
-            
-            <button 
-              onClick={() => setActiveFolder('starred')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'starred' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <Star className="w-4 h-4 mr-2" />
-              Starred
-            </button>
-            
-            <button 
-              onClick={() => setActiveFolder('sent')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'sent' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Sent
-            </button>
-            
-            <button 
-              onClick={() => setActiveFolder('drafts')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'drafts' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <File className="w-4 h-4 mr-2" />
-              Drafts
-            </button>
-            
-            <button 
-              onClick={() => setActiveFolder('archive')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'archive' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <Archive className="w-4 h-4 mr-2" />
-              Archive
-            </button>
-            
-            <button 
-              onClick={() => setActiveFolder('trash')}
-              className={`w-full text-left px-3 py-2 rounded flex items-center ${activeFolder === 'trash' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'}`}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Trash
-            </button>
-          </div>
-        </div>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Forms Inbox</h2>
+        <Button onClick={() => setShowCreateForm(true)} className="flex items-center gap-2">
+          <Plus className="w-5 h-5" /> Create Form
+        </Button>
       </div>
-      
-      {/* Message List */}
-      <div className="w-80 border-r">
-        <div className="p-3 border-b">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search messages..."
-              className="w-full pl-9 pr-3 py-2 border rounded text-sm"
-            />
-          </div>
-        </div>
+
+      <Tabs defaultValue="received" value={activeTab} onValueChange={setActiveTab} className="mb-6">
+        <TabsList>
+          <TabsTrigger value="received">Received Forms</TabsTrigger>
+          <TabsTrigger value="sent">Sent Forms</TabsTrigger>
+          <TabsTrigger value="templates">Form Templates</TabsTrigger>
+        </TabsList>
         
-        <div className="overflow-auto h-[calc(100vh-56px)]">
-          {messages.map(message => (
-            <div 
-              key={message.id} 
-              onClick={() => selectMessage(message)}
-              className={`p-3 border-b cursor-pointer ${message.read ? 'bg-white' : 'bg-blue-50'} ${selectedMessage?.id === message.id ? 'border-l-4 border-l-blue-600' : ''}`}
-            >
-              <div className="flex justify-between items-start mb-1">
-                <span className={`font-medium ${message.read ? '' : 'font-semibold'}`}>{message.sender}</span>
-                <div className="flex items-center">
-                  <span className="text-xs text-gray-500">{message.date}</span>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleStar(message.id);
+        <TabsContent value="received" className="pt-4">
+          {formSubmissions.length > 0 ? (
+            <div className="space-y-4">
+              {formSubmissions.map((form) => (
+                <div key={form.id} className="border rounded-lg p-4 bg-white shadow-sm flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <FileText className="h-5 w-5 text-blue-500" />
+                      <h3 className="font-medium">{form.formType}</h3>
+                      <Badge 
+                        className={`ml-2 ${
+                          form.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                          form.status === 'new' ? 'bg-blue-100 text-blue-800' : 
+                          'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {form.status}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <span>From: {form.patientName}</span>
+                      <span className="mx-2">•</span>
+                      <span>Received: {new Date(form.submittedDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => updateFormStatus(form.id, 'completed')}
+                    >
+                      Mark Complete
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        toast.success("Form opened for review");
+                      }}
+                    >
+                      Review
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 mt-8">No form submissions yet</div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="sent" className="pt-4">
+          <div className="text-center text-gray-500 mt-8">No sent forms yet</div>
+        </TabsContent>
+        
+        <TabsContent value="templates" className="pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {formTemplates.map(template => (
+              <div key={template.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-5 w-5 text-blue-500" />
+                  <h3 className="font-medium">{template.name}</h3>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowCreateForm(true);
+                      setNewForm({...newForm, formType: template.id});
                     }}
-                    className="ml-2"
                   >
-                    {message.starred ? (
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    ) : (
-                      <StarOff className="w-4 h-4 text-gray-400" />
-                    )}
-                  </button>
+                    Send to Patient
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      toast.success("Template opened for editing");
+                    }}
+                  >
+                    Edit
+                  </Button>
                 </div>
               </div>
-              <div className={`text-sm ${message.read ? '' : 'font-semibold'}`}>{message.subject}</div>
-              <div className="text-xs text-gray-500 mt-1 truncate">{message.content}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Message Content */}
-      <div className="flex-1 flex flex-col">
-        {selectedMessage ? (
-          <>
-            <div className="p-4 border-b">
-              <h2 className="text-xl font-bold">{selectedMessage.subject}</h2>
-              <div className="flex justify-between items-center mt-2">
-                <div>
-                  <span className="font-medium">{selectedMessage.sender}</span>
-                  <span className="text-gray-500 text-sm ml-2">{selectedMessage.date}</span>
-                </div>
-                <div>
-                  <button 
-                    onClick={() => toggleStar(selectedMessage.id)}
-                    className="p-1 rounded-full hover:bg-gray-100"
-                  >
-                    {selectedMessage.starred ? (
-                      <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    ) : (
-                      <Star className="w-5 h-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 overflow-auto flex-1">
-              <p>{selectedMessage.content}</p>
-              <p className="mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, 
-                nisl nisl aliquam nisl, eget aliquam nisl nisl eget nisl. Nullam auctor, nisl eget ultricies tincidunt,
-                nisl nisl aliquam nisl, eget aliquam nisl nisl eget nisl.
-              </p>
-              <p className="mt-4">
-                Best regards,<br />
-                {selectedMessage.sender}
-              </p>
-            </div>
-            <div className="p-4 border-t">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                Reply
-              </button>
-              <button className="px-4 py-2 border ml-2 rounded hover:bg-gray-100">
-                Forward
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500">
-            <Inbox size={48} className="mb-4 text-gray-300" />
-            <p className="text-lg">Select a message to view</p>
+            ))}
           </div>
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
+
+      <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Form</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleCreateForm} className="space-y-4">
+            <div>
+              <Label htmlFor="formType">Form Type</Label>
+              <Select
+                value={newForm.formType}
+                onValueChange={(value) => setNewForm({...newForm, formType: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select form type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {formTemplates.map(template => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="patient">Send to Patient</Label>
+              <Select
+                value={newForm.patient}
+                onValueChange={(value) => setNewForm({...newForm, patient: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="john-doe">John Doe</SelectItem>
+                  <SelectItem value="jane-smith">Jane Smith</SelectItem>
+                  <SelectItem value="mike-johnson">Mike Johnson</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowCreateForm(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Send Form</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

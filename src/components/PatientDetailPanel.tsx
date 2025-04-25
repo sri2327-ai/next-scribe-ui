@@ -1,186 +1,252 @@
 
-import React from 'react';
-import { ArrowLeft, Phone, Mail, Calendar } from 'lucide-react';
+import React, { useState } from "react";
+import { MessageCircle, Mail } from "lucide-react";
+import { Button } from "./ui/button";
+import PatientTabs from "./PatientTabs";
+import PatientDemographicsCard from "./PatientDemographicsCard";
+import PatientNotesTranscript from "./PatientNotesTranscript";
+import PatientMessagesChat from "./PatientMessagesChat";
+import PatientTimeline from "./PatientTimeline";
+import PatientProfile from "./PatientProfile";
+import PatientDocuments from "./PatientDocuments";
+import PatientSettings from "./PatientSettings";
+import MedicalHistory from "./MedicalHistory";
+import SocialHistory from "./SocialHistory";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog";
 
-interface Patient {
+interface AppointmentType {
+  label: string;
+  date: string;
+  time: string;
+  location: string;
+  clinician: string;
+}
+
+interface PatientType {
   name: string;
   age: string;
   dob: string;
-  pronouns?: string;
+  pronouns: string;
   gender: string;
   status: string;
   tags: string[];
   copay: number;
   flags: number;
   clinician: string;
-  appointments: {
-    label?: string;
-    date: string;
-    time: string;
-    location: string;
-    clinician: string;
-  }[];
+  appointments: AppointmentType[];
   lastAppointment: string | null;
   phone: string;
   email: string;
 }
 
 interface PatientDetailPanelProps {
-  patient: Patient;
+  patient: PatientType;
   onClose: () => void;
 }
 
+const panelTabs = [
+  "Notes / Transcript",
+  "Timeline",
+  "Summary",
+  "Documents",
+  "Messages",
+  "Settings"
+];
+
 const PatientDetailPanel: React.FC<PatientDetailPanelProps> = ({ patient, onClose }) => {
-  const [activeTab, setActiveTab] = React.useState('profile');
+  const [activeTab, setActiveTab] = useState<string>(panelTabs[0]);
+  const [demographicsCollapsed, setDemographicsCollapsed] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState(patient.email || "");
+  const [inviteSent, setInviteSent] = useState(false);
+  const [generatedInviteCode, setGeneratedInviteCode] = useState("");
+
+  const handleAskAI = () => {
+    setIsAIChatOpen(true);
+  };
   
+  const handleInvitePatient = () => {
+    setIsInviteDialogOpen(true);
+    // Generate a random invite code
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    setGeneratedInviteCode(code);
+  };
+  
+  const handleSendInvite = () => {
+    // In a real app, this would connect to your backend to send the invite
+    if (inviteEmail) {
+      toast.success(`Invite sent to ${inviteEmail}`);
+      setInviteSent(true);
+    } else {
+      toast.error("Please enter a valid email address");
+    }
+  };
+
   return (
-    <div className="flex-1 bg-white flex flex-col overflow-hidden">
-      <div className="p-4 border-b flex items-center">
-        <button 
-          onClick={onClose}
-          className="p-1 mr-2 rounded-full hover:bg-gray-100"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h2 className="text-xl font-semibold">{patient.name}</h2>
-        <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
-          {patient.status}
-        </span>
-      </div>
-      
-      <div className="p-4 border-b">
-        <div className="flex items-center">
-          <img
-            src="/lovable-uploads/53ad6fba-0f2a-42f5-9bb4-e0a5e45188d5.png" 
-            alt={patient.name}
-            className="w-16 h-16 rounded-full object-cover bg-gray-100"
-          />
-          <div className="ml-4">
-            <div className="text-sm">
-              <span className="text-gray-500">DOB:</span> {patient.dob} ({patient.age})
-            </div>
-            <div className="text-sm">
-              <span className="text-gray-500">Gender:</span> {patient.gender}
-              {patient.pronouns && <span className="ml-2">({patient.pronouns})</span>}
-            </div>
-            <div className="flex items-center gap-4 mt-2">
-              <a href={`tel:${patient.phone}`} className="text-blue-600 flex items-center">
-                <Phone className="w-4 h-4 mr-1" />
-                <span className="text-sm">Call</span>
-              </a>
-              <a href={`mailto:${patient.email}`} className="text-blue-600 flex items-center">
-                <Mail className="w-4 h-4 mr-1" />
-                <span className="text-sm">Email</span>
-              </a>
-              <button className="text-blue-600 flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                <span className="text-sm">Schedule</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-b">
-        <div className="flex overflow-x-auto">
-          {['Profile', 'Notes', 'Chart', 'Documents', 'Timeline', 'Billing', 'Messages'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab.toLowerCase())}
-              className={`px-4 py-2 text-sm font-medium whitespace-nowrap ${
-                activeTab === tab.toLowerCase()
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-black'
-              }`}
+    <div className="flex h-full w-full">
+      <div className="flex flex-1 h-full overflow-hidden">
+        <PatientDemographicsCard
+          patient={patient}
+          collapsed={demographicsCollapsed}
+          onToggle={() => setDemographicsCollapsed((c) => !c)}
+        />
+        <div className="flex-1 flex flex-col overflow-hidden bg-white relative">
+          <div className="absolute bottom-6 right-6 flex flex-col space-y-2 z-10">
+            <Button
+              onClick={handleInvitePatient}
+              className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-shadow bg-green-500 hover:bg-green-600"
+              size="icon"
+              title="Invite to Patient Portal"
             >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="flex-1 overflow-auto p-4">
-        {activeTab === 'profile' && (
-          <div>
-            <h3 className="text-lg font-medium mb-4">Patient Information</h3>
-            
-            <div className="mb-6">
-              <h4 className="font-medium text-gray-700 mb-2">Contact Information</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p>{patient.phone}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p>{patient.email}</p>
-                </div>
-              </div>
+              <Mail className="h-6 w-6" />
+            </Button>
+            <Button
+              onClick={handleAskAI}
+              className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-shadow"
+              size="icon"
+              title="Ask AI"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </Button>
+          </div>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="border-b">
+              <PatientTabs tabs={panelTabs} activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
-            
-            <div className="mb-6">
-              <h4 className="font-medium text-gray-700 mb-2">Appointments</h4>
-              <div className="space-y-3">
-                {patient.appointments.map((appointment, index) => (
-                  <div key={index} className="p-3 border rounded-lg">
-                    {appointment.label && (
-                      <div className="text-xs font-semibold text-blue-600 mb-1">
-                        {appointment.label}
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">{appointment.date}</div>
-                        <div className="text-sm text-gray-500">{appointment.time}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm">{appointment.location}</div>
-                        <div className="text-xs text-gray-500">with {appointment.clinician}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {patient.lastAppointment && (
-                <div className="mt-2 text-sm text-gray-500">
-                  Last appointment: {patient.lastAppointment}
+            <div className="p-6 overflow-y-auto flex-1">
+              {activeTab === "Notes / Transcript" ? (
+                <PatientNotesTranscript patient={patient} />
+              ) : activeTab === "Messages" ? (
+                <PatientMessagesChat patient={patient} />
+              ) : activeTab === "Timeline" ? (
+                <PatientTimeline patient={patient} />
+              ) : activeTab === "Summary" ? (
+                <div className="space-y-6">
+                  <PatientProfile patient={patient} />
+                  <MedicalHistory />
+                  <SocialHistory />
                 </div>
+              ) : activeTab === "Documents" ? (
+                <PatientDocuments patient={patient} />
+              ) : activeTab === "Settings" ? (
+                <PatientSettings patient={patient} />
+              ) : (
+                <div className="text-sm text-gray-500">Content: {activeTab}</div>
               )}
             </div>
-            
-            <div className="mb-6">
-              <h4 className="font-medium text-gray-700 mb-2">Billing Information</h4>
-              <div className="grid grid-cols-2 gap-4">
+          </div>
+        </div>
+      </div>
+
+      {/* AI Chat Dialog */}
+      <Dialog open={isAIChatOpen} onOpenChange={setIsAIChatOpen}>
+        <DialogContent className="sm:max-w-md">
+          <div className="p-4">
+            <h3 className="text-lg font-medium mb-4">Ask AI about {patient.name}</h3>
+            <div className="space-y-4">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                What would you like to know about this patient?
+              </div>
+              <div className="flex">
+                <input 
+                  type="text" 
+                  className="flex-1 border rounded-l-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" 
+                  placeholder="Ask a question..." 
+                />
+                <Button className="rounded-l-none">Ask</Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Patient Portal Invite Dialog */}
+      <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invite {patient.name} to Patient Portal</DialogTitle>
+          </DialogHeader>
+          
+          {!inviteSent ? (
+            <div className="py-4">
+              <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500">Copay</p>
-                  <p>${patient.copay}</p>
+                  <label htmlFor="email" className="block text-sm font-medium mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="w-full border rounded-md px-3 py-2"
+                    placeholder="patient@example.com"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="inviteCode" className="block text-sm font-medium mb-1">
+                    Invitation Code
+                  </label>
+                  <div className="flex">
+                    <input
+                      type="text"
+                      id="inviteCode"
+                      value={generatedInviteCode}
+                      readOnly
+                      className="flex-1 border rounded-l-md px-3 py-2 bg-gray-50"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-l-none"
+                      onClick={() => {
+                        navigator.clipboard.writeText(generatedInviteCode);
+                        toast.success("Invitation code copied to clipboard");
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Share this code with the patient to use during sign-up
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 p-3 rounded-md text-sm">
+                  An email will be sent to the patient with instructions on how to create their account.
                 </div>
               </div>
+              
+              <DialogFooter className="mt-6">
+                <Button variant="outline" onClick={() => setIsInviteDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSendInvite}>Send Invitation</Button>
+              </DialogFooter>
             </div>
-            
-            <div>
-              <h4 className="font-medium text-gray-700 mb-2">Tags</h4>
-              <div className="flex flex-wrap gap-2">
-                {patient.tags.length > 0 ? (
-                  patient.tags.map((tag, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 rounded text-sm">
-                      {tag}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-sm text-gray-500">No tags added</span>
-                )}
+          ) : (
+            <div className="py-6 text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">Invitation Sent!</h3>
+              <p className="mt-2 text-sm text-gray-500">
+                An invitation has been sent to {inviteEmail}
+              </p>
+              <div className="mt-6">
+                <Button onClick={() => setIsInviteDialogOpen(false)}>
+                  Close
+                </Button>
               </div>
             </div>
-          </div>
-        )}
-        
-        {activeTab !== 'profile' && (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <p>This {activeTab} tab is under development</p>
-          </div>
-        )}
-      </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

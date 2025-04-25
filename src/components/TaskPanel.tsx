@@ -1,138 +1,301 @@
 
 import React, { useState } from 'react';
-import { Check, Clock, Calendar, AlertCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Check, Clock, AlertCircle } from 'lucide-react';
+import { toast } from "sonner";
 
 interface Task {
   id: string;
-  title: string;
+  details: string;
+  assignedTo: string;
+  patient: string;
   dueDate: string;
-  priority: 'high' | 'medium' | 'low';
-  completed: boolean;
+  author: string;
+  type: string;
+  status: 'pending' | 'completed' | 'overdue';
 }
 
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Complete patient assessment for John Doe',
-    dueDate: '2025-04-25',
-    priority: 'high',
-    completed: false
-  },
-  {
-    id: '2',
-    title: 'Review treatment plan for Sarah Williams',
-    dueDate: '2025-04-26',
-    priority: 'medium',
-    completed: false
-  },
-  {
-    id: '3',
-    title: 'Schedule follow-up with David Johnson',
-    dueDate: '2025-04-27',
-    priority: 'low',
-    completed: true
-  }
-];
-
-const TaskPanel: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [filter, setFilter] = useState<'all' | 'completed' | 'incomplete'>('all');
-
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'all') return true;
-    if (filter === 'completed') return task.completed;
-    if (filter === 'incomplete') return !task.completed;
-    return true;
+const TaskPanel = () => {
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: '1',
+      details: 'Call patient to follow up on medication changes',
+      assignedTo: 'Dr. Smith',
+      patient: 'John Doe',
+      dueDate: '2025-04-25',
+      author: 'Dr. Johnson',
+      type: 'Follow-up',
+      status: 'pending'
+    },
+    {
+      id: '2',
+      details: 'Review lab results and update patient chart',
+      assignedTo: 'Dr. Johnson',
+      patient: 'Jane Smith',
+      dueDate: '2025-04-24',
+      author: 'Dr. Smith',
+      type: 'Review',
+      status: 'overdue'
+    }
+  ]);
+  
+  const [newTask, setNewTask] = useState<Partial<Task>>({
+    assignedTo: '',
+    patient: '',
+    details: '',
+    dueDate: new Date().toISOString().split('T')[0],
+    type: '',
+    status: 'pending'
   });
 
-  const toggleTaskCompletion = (id: string) => {
-    setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
+  const handleAddTask = (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    const task: Task = {
+      id: Date.now().toString(),
+      details: newTask.details || '',
+      assignedTo: newTask.assignedTo || '',
+      patient: newTask.patient || '',
+      dueDate: newTask.dueDate || '',
+      author: 'Current User', // In a real app, get from auth context
+      type: newTask.type || '',
+      status: 'pending'
+    };
+    
+    setTasks([...tasks, task]);
+    toast.success("Task created successfully");
+    setShowAddTask(false);
+    setNewTask({
+      assignedTo: '',
+      patient: '',
+      details: '',
+      dueDate: new Date().toISOString().split('T')[0],
+      type: '',
+      status: 'pending'
+    });
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch(priority) {
-      case 'high': return 'bg-red-100 text-red-700';
-      case 'medium': return 'bg-yellow-100 text-yellow-700';
-      case 'low': return 'bg-green-100 text-green-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
+  const updateTaskStatus = (taskId: string, status: 'pending' | 'completed' | 'overdue') => {
+    const updatedTasks = tasks.map(task => 
+      task.id === taskId ? { ...task, status } : task
+    );
+    setTasks(updatedTasks);
+    toast.success(`Task marked as ${status}`);
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="border-b p-4">
-        <h1 className="text-2xl font-bold">Tasks</h1>
-        <div className="flex mt-4 space-x-2">
-          <button 
-            onClick={() => setFilter('all')}
-            className={`px-3 py-1 rounded-full text-sm ${filter === 'all' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
-          >
-            All
-          </button>
-          <button 
-            onClick={() => setFilter('incomplete')}
-            className={`px-3 py-1 rounded-full text-sm ${filter === 'incomplete' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
-          >
-            Incomplete
-          </button>
-          <button 
-            onClick={() => setFilter('completed')}
-            className={`px-3 py-1 rounded-full text-sm ${filter === 'completed' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
-          >
-            Completed
-          </button>
-        </div>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Tasks</h2>
+        <Button onClick={() => setShowAddTask(true)} className="flex items-center gap-2">
+          <Plus className="w-5 h-5" /> Add Task
+        </Button>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto">
-        {filteredTasks.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No tasks found
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {filteredTasks.map(task => (
-              <div 
-                key={task.id} 
-                className={`p-4 border rounded-lg ${task.completed ? 'bg-gray-50' : 'bg-white'}`}
+      <Dialog open={showAddTask} onOpenChange={setShowAddTask}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Task</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleAddTask} className="space-y-4">
+            <div>
+              <Label htmlFor="details">Details</Label>
+              <Textarea 
+                id="details" 
+                placeholder="Enter task details" 
+                value={newTask.details}
+                onChange={(e) => setNewTask({...newTask, details: e.target.value})}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="assignTo">Assign To</Label>
+              <Select 
+                value={newTask.assignedTo} 
+                onValueChange={(value) => setNewTask({...newTask, assignedTo: value})}
               >
-                <div className="flex items-start gap-3">
-                  <div 
-                    className={`w-5 h-5 rounded-full border flex items-center justify-center cursor-pointer ${task.completed ? 'bg-blue-500 border-blue-500' : 'border-gray-300'}`}
-                    onClick={() => toggleTaskCompletion(task.id)}
+                <SelectTrigger>
+                  <SelectValue placeholder="Select team member" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dr-smith">Dr. Smith</SelectItem>
+                  <SelectItem value="dr-johnson">Dr. Johnson</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="patient">Regarding Patient</Label>
+              <Select 
+                value={newTask.patient}
+                onValueChange={(value) => setNewTask({...newTask, patient: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="john-doe">John Doe</SelectItem>
+                  <SelectItem value="jane-smith">Jane Smith</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Reminder Date</Label>
+              <div className="flex gap-2">
+                <Input 
+                  type="date" 
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                />
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  type="button"
+                  onClick={() => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + 1);
+                    setNewTask({
+                      ...newTask, 
+                      dueDate: date.toISOString().split('T')[0]
+                    });
+                  }}
+                >+1d</Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  type="button"
+                  onClick={() => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + 7);
+                    setNewTask({
+                      ...newTask, 
+                      dueDate: date.toISOString().split('T')[0]
+                    });
+                  }}
+                >+1w</Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  type="button"
+                  onClick={() => {
+                    const date = new Date();
+                    date.setMonth(date.getMonth() + 1);
+                    setNewTask({
+                      ...newTask, 
+                      dueDate: date.toISOString().split('T')[0]
+                    });
+                  }}
+                >+1m</Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  type="button"
+                  onClick={() => {
+                    const date = new Date();
+                    date.setFullYear(date.getFullYear() + 1);
+                    setNewTask({
+                      ...newTask, 
+                      dueDate: date.toISOString().split('T')[0]
+                    });
+                  }}
+                >+1y</Button>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="type">Task Type</Label>
+              <Select 
+                value={newTask.type}
+                onValueChange={(value) => setNewTask({...newTask, type: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select task type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="reminder">Reminder</SelectItem>
+                  <SelectItem value="follow-up">Follow-up</SelectItem>
+                  <SelectItem value="review">Review</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowAddTask(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Create Task</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <div className="mt-6">
+        {tasks.length === 0 ? (
+          <div className="text-center text-gray-500 mt-8">No tasks created yet</div>
+        ) : (
+          <div className="space-y-4">
+            {tasks.map((task) => (
+              <div key={task.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-medium">{task.details}</h3>
+                  <Badge 
+                    className={`
+                      ${task.status === 'completed' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 
+                        task.status === 'overdue' ? 'bg-red-100 text-red-800 hover:bg-red-200' : 
+                        'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'}
+                    `}
                   >
-                    {task.completed && <Check className="w-3 h-3 text-white" />}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : ''}`}>
-                      {task.title}
-                    </h3>
-                    
-                    <div className="flex items-center mt-2 text-sm gap-4">
-                      <span className="flex items-center text-gray-500">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(task.dueDate).toLocaleDateString()}
-                      </span>
-                      
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${getPriorityColor(task.priority)}`}>
-                        {task.priority}
-                      </span>
-                    </div>
-                  </div>
+                    {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                  </Badge>
+                </div>
+                
+                <div className="text-sm text-gray-600 mb-4">
+                  <div><span className="font-semibold">Patient:</span> {task.patient}</div>
+                  <div><span className="font-semibold">Assigned to:</span> {task.assignedTo}</div>
+                  <div><span className="font-semibold">Due:</span> {new Date(task.dueDate).toLocaleDateString()}</div>
+                  <div><span className="font-semibold">Type:</span> {task.type}</div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center gap-1" 
+                    onClick={() => updateTaskStatus(task.id, 'completed')}
+                  >
+                    <Check className="w-4 h-4" /> Complete
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center gap-1" 
+                    onClick={() => updateTaskStatus(task.id, 'pending')}
+                  >
+                    <Clock className="w-4 h-4" /> Pending
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center gap-1" 
+                    onClick={() => updateTaskStatus(task.id, 'overdue')}
+                  >
+                    <AlertCircle className="w-4 h-4" /> Overdue
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-      
-      <div className="border-t p-4">
-        <button className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Add New Task
-        </button>
       </div>
     </div>
   );

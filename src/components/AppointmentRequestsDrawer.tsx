@@ -1,142 +1,101 @@
 
-import React from 'react';
-import { X, Calendar, Check, X as XIcon } from 'lucide-react';
+import React, { useState } from "react";
+import { X } from "lucide-react";
 
-interface AppointmentRequest {
-  id: string;
-  patientName: string;
-  date: string;
-  time: string;
+interface DummyAppt {
+  id: number;
+  patient: string;
   type: string;
-  message?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  forMe: boolean;
 }
 
-const mockRequests: AppointmentRequest[] = [
-  {
-    id: '1',
-    patientName: 'John Smith',
-    date: '2025-04-28',
-    time: '10:00 AM',
-    type: 'Psychotherapy',
-    message: 'Requesting an earlier appointment due to worsening symptoms.',
-    status: 'pending'
-  },
-  {
-    id: '2',
-    patientName: 'Emma Johnson',
-    date: '2025-04-30',
-    time: '3:30 PM',
-    type: 'Medication Management',
-    status: 'pending'
-  },
-  {
-    id: '3',
-    patientName: 'Michael Brown',
-    date: '2025-05-02',
-    time: '2:00 PM',
-    type: 'Consultation',
-    status: 'pending'
-  }
+const dummyRequests: DummyAppt[] = [
+  { id: 1, patient: "Alex Smith", type: "Psychotherapy", forMe: true },
+  { id: 2, patient: "Jane Williams", type: "Medication Management", forMe: false },
+  { id: 3, patient: "Michael Lee", type: "Initial Evaluation", forMe: true },
+  { id: 4, patient: "Sophie Brown", type: "Psychotherapy", forMe: false }
 ];
 
-interface AppointmentRequestsDrawerProps {
+const AppointmentRequestsDrawer: React.FC<{
   open: boolean;
   onClose: () => void;
-}
+}> = ({ open, onClose }) => {
+  const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
+  const [requests, setRequests] = useState(dummyRequests);
 
-const AppointmentRequestsDrawer: React.FC<AppointmentRequestsDrawerProps> = ({ open, onClose }) => {
-  const [requests, setRequests] = React.useState<AppointmentRequest[]>(mockRequests);
+  // Approve appointment: removes it from requests
+  function handleApprove(id: number) {
+    setRequests(prev => prev.filter(r => r.id !== id));
+  }
 
-  const handleApprove = (id: string) => {
-    setRequests(requests.map(req => 
-      req.id === id ? { ...req, status: 'approved' as const } : req
-    ));
-  };
-
-  const handleReject = (id: string) => {
-    setRequests(requests.map(req => 
-      req.id === id ? { ...req, status: 'rejected' as const } : req
-    ));
-  };
-
-  if (!open) return null;
+  const shown =
+    activeTab === "all"
+      ? requests
+      : requests.filter(r => r.forMe);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-      <div className="w-full max-w-md bg-white h-full overflow-auto">
-        <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white z-10">
-          <div className="flex items-center">
-            <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-            <h2 className="text-lg font-semibold">Appointment Requests</h2>
+    <div
+      className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-lg z-50 transition-transform duration-300 ${
+        open ? "translate-x-0" : "translate-x-full"
+      }`}
+      style={{ minWidth: 340 }}
+      tabIndex={-1}
+      aria-modal="true"
+      role="dialog"
+    >
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold text-blue-900">Appointment Requests</span>
+        </div>
+        <button
+          onClick={onClose}
+          title="Close"
+          className="p-2 rounded hover:bg-blue-100"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+      {/* Tabs */}
+      <div className="flex border-b">
+        <button
+          className={`flex-1 py-2 text-center text-sm font-medium transition ${
+            activeTab === "all"
+              ? "border-b-2 border-blue-700 text-blue-800 bg-blue-100"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+          onClick={() => setActiveTab("all")}
+        >
+          All Requests
+        </button>
+        <button
+          className={`flex-1 py-2 text-center text-sm font-medium transition ${
+            activeTab === "mine"
+              ? "border-b-2 border-blue-700 text-blue-800 bg-blue-100"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+          onClick={() => setActiveTab("mine")}
+        >
+          My Requests
+        </button>
+      </div>
+      <div className="p-4 overflow-y-auto" style={{ maxHeight: "calc(100vh - 115px)" }}>
+        {shown.length === 0 && (
+          <div className="text-sm text-gray-400 mt-6 text-center">No appointment requests</div>
+        )}
+        {shown.map(r => (
+          <div key={r.id} className="flex items-center justify-between mb-4 p-3 rounded border bg-gray-50">
+            <div>
+              <div className="font-semibold text-gray-700">{r.patient}</div>
+              <div className="text-xs text-gray-500">{r.type}</div>
+            </div>
+            <button
+              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
+              onClick={() => handleApprove(r.id)}
+            >
+              Approve
+            </button>
           </div>
-          <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        
-        <div className="p-4">
-          {requests.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              No pending appointment requests
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {requests.map(request => (
-                <div key={request.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold">{request.patientName}</h3>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      request.status === 'approved' ? 'bg-green-100 text-green-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                    </span>
-                  </div>
-                  
-                  <div className="mt-2 space-y-1 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Date:</span>
-                      <span>{new Date(request.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Time:</span>
-                      <span>{request.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Type:</span>
-                      <span>{request.type}</span>
-                    </div>
-                  </div>
-                  
-                  {request.message && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
-                      {request.message}
-                    </div>
-                  )}
-                  
-                  {request.status === 'pending' && (
-                    <div className="flex justify-end mt-3 gap-2">
-                      <button 
-                        onClick={() => handleReject(request.id)}
-                        className="p-2 border rounded hover:bg-gray-100"
-                      >
-                        <XIcon className="w-4 h-4 text-red-500" />
-                      </button>
-                      <button 
-                        onClick={() => handleApprove(request.id)}
-                        className="p-2 border rounded hover:bg-gray-100"
-                      >
-                        <Check className="w-4 h-4 text-green-500" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        ))}
       </div>
     </div>
   );
