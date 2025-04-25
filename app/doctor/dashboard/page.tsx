@@ -4,6 +4,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
+import { formatDate } from "@/app/lib/utils";
 
 export default function Dashboard() {
   return (
@@ -48,7 +49,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between py-2 border-b">
               <div>
                 <p className="font-medium">John Doe</p>
-                <p className="text-sm text-gray-500">Last visit: Today</p>
+                <p className="text-sm text-gray-500">Last visit: {formatDate(new Date())}</p>
               </div>
               <Button variant="outline" size="sm">View</Button>
             </div>
