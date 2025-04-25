@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -56,36 +57,6 @@ export default {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
-        },
-        sidebar: {
-          DEFAULT: 'hsl(var(--sidebar-background))',
-          foreground: 'hsl(var(--sidebar-foreground))',
-          primary: 'hsl(var(--sidebar-primary))',
-          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-          accent: 'hsl(var(--sidebar-accent))',
-          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-          border: 'hsl(var(--sidebar-border))',
-          ring: 'hsl(var(--sidebar-ring))'
-        },
-        'theme-blue': {
-          light: '#E3F2FD',
-          DEFAULT: '#2196F3',
-          dark: '#1565C0',
-        },
-        'theme-red': {
-          light: '#FFEBEE',
-          DEFAULT: '#F44336',
-          dark: '#C62828',
-        },
-        'theme-purple': {
-          light: '#F3E5F5',
-          DEFAULT: '#9C27B0',
-          dark: '#6A1B9A',
-        },
-        'theme-green': {
-          light: '#E8F5E9',
-          DEFAULT: '#4CAF50',
-          dark: '#2E7D32',
         }
       },
       borderRadius: {
@@ -95,20 +66,12 @@ export default {
       },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0'
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)'
-          }
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)'
-          },
-          to: {
-            height: '0'
-          }
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
         }
       },
       animation: {
