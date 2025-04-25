@@ -1,9 +1,9 @@
 
-"use client";
+"use client"
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
 
 export default function Dashboard() {
   return (
@@ -11,26 +11,40 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-2">Today's Appointments</h2>
-          <p className="text-3xl font-bold">5</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>Today's Appointments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">5</p>
+          </CardContent>
         </Card>
         
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-2">Pending Tasks</h2>
-          <p className="text-3xl font-bold">3</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>Pending Tasks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">3</p>
+          </CardContent>
         </Card>
         
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-2">New Messages</h2>
-          <p className="text-3xl font-bold">7</p>
+        <Card>
+          <CardHeader>
+            <CardTitle>New Messages</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">7</p>
+          </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Recent Patients</h2>
-          <div className="space-y-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Patients</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b">
               <div>
                 <p className="font-medium">John Doe</p>
@@ -45,12 +59,14 @@ export default function Dashboard() {
               </div>
               <Button variant="outline" size="sm">View</Button>
             </div>
-          </div>
+          </CardContent>
         </Card>
         
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Upcoming Appointments</h2>
-          <div className="space-y-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Appointments</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b">
               <div>
                 <p className="font-medium">2:00 PM - Michael Johnson</p>
@@ -69,7 +85,7 @@ export default function Dashboard() {
                 Tomorrow
               </div>
             </div>
-          </div>
+          </CardContent>
         </Card>
       </div>
     </main>
