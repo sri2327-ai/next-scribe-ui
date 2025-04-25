@@ -1,5 +1,6 @@
 
 import { Metadata } from "next";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Patient Portal - S10.AI",
@@ -11,5 +12,10 @@ export default function PatientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <Toaster />
+    </>
+  );
 }
